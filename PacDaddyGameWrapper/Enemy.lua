@@ -6,6 +6,7 @@ local public = {}
 local function new()
     local enemy = Pactor:new()
     enemy:setAttribute("IS_ENEMY", true)
+    enemy:setAttribute("TYPE", "ENEMY")
     enemy:setAttribute("VALUE", 200)
     
     local oppositeDirectionTable = {

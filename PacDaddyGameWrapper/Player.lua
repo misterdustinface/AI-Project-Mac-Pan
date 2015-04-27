@@ -6,6 +6,7 @@ local public = {}
 
 local function new()
     local player = Pactor:new()
+    player:setAttribute("TYPE", "PLAYER")
     player:setAttribute("IS_PLAYER", true)
     
     local function onPactorCollision(otherPactorAttributes)

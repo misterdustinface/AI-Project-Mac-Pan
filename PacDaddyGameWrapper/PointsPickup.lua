@@ -5,6 +5,7 @@ local public = {}
 
 local function new()
     local pickup = Pactor:new()
+    pickup:setAttribute("TYPE", "PLAYER")
     pickup:setAttribute("IS_PICKUP", true)
     pickup:setAttribute("VALUE", 1)
     
