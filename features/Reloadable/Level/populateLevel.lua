@@ -9,6 +9,15 @@ world:addPactor("PLAYER1", player)
 world:setPactorSpawn("PLAYER1", 17, 14)
 world:respawnPactor("PLAYER1")
 
+local Pickup = require("PacDaddyGameWrapper/PointsPickup")
+local pickup = Pickup:new()
+local pactorName = "GOAL"
+world:addPactor(pactorName, pickup)
+world:setPactorSpawn(pactorName, 1, 1)
+world:respawnPactor(pactorName)
+
+
+
 --local frienemy = Enemy:new()
 --world:addPactor("FRIENEMY", frienemy)
 --world:setPactorSpawn("FRIENEMY", 13, 13)
