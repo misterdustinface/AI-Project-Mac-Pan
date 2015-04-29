@@ -17,19 +17,18 @@ local getTileID
 local isVisitable
 local getDirectionToMove
 local determineDirectionToMove
-local clearDataStructures
+local initDataStructures
 local getStartSuccessor
 local markAsVisited
+local wasVisited
+local getPredecessorOf
 local setLeftPredecessorAsRight
+local getCoordinateOfPactor
 
   -- ALGORITHMS
 local bfs
-local aStar
 
 -- END FUNCTION DECLARATIONS BITCHES
-
---local openTiles = luajava.newInstance("java.util.PriorityQueue")
---local closedTiles = luajava.newInstance("java.util.Stack")
 
 -- START BFS DATA STRUCTURES
 local visited
@@ -41,46 +40,40 @@ local board
 
 function getDirectionToMove(start, destination)
   board = world:getTiledBoard()
-  clearDataStructures()
+  initDataStructures()
   bfs(start)
-  return determineDirectionToMove(start, getStartSuccessor(start, destination))
-end
-
-local function playerTick()
-end
-
-function aStar(start, destination)
-  board = world:getTiledBoard()
+  local bestNextTile = getStartSuccessor(start, destination)
+  return determineDirectionToMove(start, bestNextTile)
 end
 
 function setLeftPredecessorAsRight(left, right)
-  predecessors[getTileID(left)] = getTileID(right)
+  predecessors[getTileID(left)] = right
 end
 
 function getStartSuccessor(start, destination)
-  local startSuccessor = predecessors[getTileID(destination)]
-  while predecessors[getTileID(startSuccessor)] ~= getTileID(start) do
-    print("CURRENT SUCCESSOR: " .. startSuccessor)
-    startSuccessor = predecessors[getTileID(startSuccessor)]
+  local tile = destination
+  while getPredecessorOf(tile) ~= start do
+    --print("CURRENT SUCCESSOR: ", tile.row, tile.col)
+    tile = getPredecessorOf(tile)
   end
-  return startSuccessor
+  return tile
+end
+
+function getPredecessorOf(tile)
+  return predecessors[getTileID(tile)]
 end
 
 function determineDirectionToMove(current, nextTile)
   if current.row < nextTile.row then
     return "DOWN"
-  end
-  
-  if current.row > nextTile.row then
+  elseif current.row > nextTile.row then
     return "UP"
-  end
-  
-  if current.col < nextTile.col then
+  elseif current.col < nextTile.col then
     return "RIGHT"
-  end
-  
-  if current.col > nextTile.col then
+  elseif current.col > nextTile.col then
     return "LEFT"
+  else
+    return "UP"
   end
 end
 
@@ -88,10 +81,14 @@ function markAsVisited(tile)
   visited[getTileID(tile)] = tile
 end
 
+function wasVisited(tile)
+  return visited[getTileID(tile)]
+end
+
 function bfs(start)
   ready:enqueue(start)
   markAsVisited(start)
-  predecessors[start] = {row = -1, col = -1}
+  predecessors[getTileID(start)] = nil
   
   while not ready:isEmpty() do
     local current = ready:dequeue()
@@ -104,7 +101,7 @@ end
 
 function visitIfPossible(current, neighbor)
   if isVisitable(neighbor) then
-    print("VISITING: " .. current.row .. ", " .. current.col)
+    --print("VISITING: " .. current.row .. ", " .. current.col)
     ready:enqueue(neighbor)
     markAsVisited(neighbor)
     setLeftPredecessorAsRight(neighbor, current)
@@ -112,18 +109,20 @@ function visitIfPossible(current, neighbor)
 end
 
 function getTileID(tile)
-  return tile.row .. "," .. tile.col
+  if tile then
+    return tile.row .. "," .. tile.col
+  end
 end
 
-function clearDataStructures()
+function initDataStructures()
   visited = {}
   ready = Queue:new()
   predecessors = {}
 end
 
 function isVisitable(tile)
-  -- isWall is expecting 0 base indexing
-  return not world:isWall(tile.row - 1, tile.col - 1) and not visited[getTileID(tile)]
+  -- isWall is expecting 0 based indexing
+  return not world:isWall(tile.row - 1, tile.col - 1) and not wasVisited(tile)
 end
 
 function getTileToRightOf(currentTile)
@@ -158,6 +157,22 @@ function wrapBoundary(tile)
   return tile
 end
 
-print(getDirectionToMove({row = 2, col = 2}, {row = 5, col = 2}))
+function getCoordinateOfPactor(name)
+  local row = world:getRowOf(name) + 1
+  local col = world:getColOf(name) + 1
+  return { row = row, col = col}
+end
+
+local function playerTick()
+  local playerCoordinate = getCoordinateOfPactor("PLAYER1")
+  local goalExists, goalCoordinate = pcall(getCoordinateOfPactor, "GOAL")
+  if goalExists then
+    local direction = getDirectionToMove(playerCoordinate, goalCoordinate)
+    player:performAction(direction)
+  end
+end
 
 PLAYER_TICK = playerTick
+
+--print(getDirectionToMove({row = 2, col = 2}, {row = 5, col = 2}))
+--print("!!! DONE !!!")
