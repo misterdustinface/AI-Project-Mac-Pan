@@ -2,6 +2,12 @@ local Queue = require("luasrc/Queue")
 local world = GAME:getModifiableWorld()
 local player = world:getPactor("PLAYER1")
 
+
+
+local function playerTick()
+
+end
+
 -- START FUNCTION DECLARATIONS BITCHES
 
 --SANTA'S LITTLE HELPER FUNCTIONS
