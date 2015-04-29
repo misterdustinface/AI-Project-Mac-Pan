@@ -13,6 +13,7 @@ local getTileAbove
 local getTileBelow
 local getCoordinateID
 local visitIfPossible
+local visit
 local getTileID
 local isVisitable
 local getDirectionToMove
@@ -22,7 +23,7 @@ local getStartSuccessor
 local markAsVisited
 local wasVisited
 local getPredecessorOf
-local setLeftPredecessorAsRight
+local setPredecessorOf
 local getCoordinateOfPactor
 
   -- ALGORITHMS
@@ -46,49 +47,14 @@ function getDirectionToMove(start, destination)
   return determineDirectionToMove(start, bestNextTile)
 end
 
-function setLeftPredecessorAsRight(left, right)
-  predecessors[getTileID(left)] = right
-end
-
-function getStartSuccessor(start, destination)
-  local tile = destination
-  while getPredecessorOf(tile) ~= start do
-    --print("CURRENT SUCCESSOR: ", tile.row, tile.col)
-    tile = getPredecessorOf(tile)
-  end
-  return tile
-end
-
-function getPredecessorOf(tile)
-  return predecessors[getTileID(tile)]
-end
-
-function determineDirectionToMove(current, nextTile)
-  if current.row < nextTile.row then
-    return "DOWN"
-  elseif current.row > nextTile.row then
-    return "UP"
-  elseif current.col < nextTile.col then
-    return "RIGHT"
-  elseif current.col > nextTile.col then
-    return "LEFT"
-  else
-    return "UP"
-  end
-end
-
-function markAsVisited(tile)
-  visited[getTileID(tile)] = tile
-end
-
-function wasVisited(tile)
-  return visited[getTileID(tile)]
+function initDataStructures()
+  visited = {}
+  ready = Queue:new()
+  predecessors = {}
 end
 
 function bfs(start)
-  ready:enqueue(start)
-  markAsVisited(start)
-  predecessors[getTileID(start)] = nil
+  visit(start)
   
   while not ready:isEmpty() do
     local current = ready:dequeue()
@@ -101,28 +67,44 @@ end
 
 function visitIfPossible(current, neighbor)
   if isVisitable(neighbor) then
-    --print("VISITING: " .. current.row .. ", " .. current.col)
-    ready:enqueue(neighbor)
-    markAsVisited(neighbor)
-    setLeftPredecessorAsRight(neighbor, current)
+    visit(neighbor)
+    setPredecessorOf(neighbor, current)
   end
 end
 
-function getTileID(tile)
-  if tile then
-    return tile.row .. "," .. tile.col
-  end
-end
-
-function initDataStructures()
-  visited = {}
-  ready = Queue:new()
-  predecessors = {}
+function visit(tile)
+  ready:enqueue(tile)
+  markAsVisited(tile)
 end
 
 function isVisitable(tile)
   -- isWall is expecting 0 based indexing
   return not world:isWall(tile.row - 1, tile.col - 1) and not wasVisited(tile)
+end
+
+function markAsVisited(tile)
+  visited[getTileID(tile)] = tile
+end
+
+function wasVisited(tile)
+  return visited[getTileID(tile)]
+end
+
+function getStartSuccessor(start, destination)
+  local tile = destination
+  while getPredecessorOf(tile) ~= start do
+    --print("CURRENT SUCCESSOR: ", tile.row, tile.col)
+    tile = getPredecessorOf(tile)
+  end
+  return tile
+end
+
+function setPredecessorOf(tile, predecessorTile)
+  predecessors[getTileID(tile)] = predecessorTile
+end
+
+function getPredecessorOf(tile)
+  return predecessors[getTileID(tile)]
 end
 
 function getTileToRightOf(currentTile)
@@ -155,6 +137,26 @@ function wrapBoundary(tile)
   end
   
   return tile
+end
+
+function determineDirectionToMove(current, nextTile)
+  if current.row < nextTile.row then
+    return "DOWN"
+  elseif current.row > nextTile.row then
+    return "UP"
+  elseif current.col < nextTile.col then
+    return "RIGHT"
+  elseif current.col > nextTile.col then
+    return "LEFT"
+  else
+    return "UP"
+  end
+end
+
+function getTileID(tile)
+  if tile then
+    return tile.row .. "," .. tile.col
+  end
 end
 
 function getCoordinateOfPactor(name)
