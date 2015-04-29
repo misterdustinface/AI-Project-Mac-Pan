@@ -2,12 +2,6 @@ local Queue = require("luasrc/Queue")
 local world = GAME:getModifiableWorld()
 local player = world:getPactor("PLAYER1")
 
-
-
-local function playerTick()
-
-end
-
 -- START FUNCTION DECLARATIONS BITCHES
 
 --SANTA'S LITTLE HELPER FUNCTIONS
@@ -43,19 +37,24 @@ local predecessors = {}
 
 local board
 
-function aStar(start, destination)
-  board = world:getTiledBoard()
-end
-
 function getDirectionToMove(start, destination)
+  board = world:getTiledBoard()
   clearDataStructures()
   bfs(start)
   return determineDirectionToMove(start, getStartSuccessor(start, destination))
 end
 
+local function playerTick()
+
+end
+
+function aStar(start, destination)
+  board = world:getTiledBoard()
+end
+
 function getStartSuccessor(start, destination)
-  local startSuccessor = predecessors[getTileID(destination)]
-  while predecessors[startSuccessor] ~= getTileID(start) do
+  local startSuccessor = predecessors[destination]
+  while predecessors[startSuccessor] ~= start do
     startSuccessor = predecessors[startSuccessor]
   end
   return startSuccessor
@@ -80,25 +79,24 @@ function determineDirectionToMove(current, next)
 end
 
 function bfs(start)
-
-  ready:enqueue(getTileID(start))
-  visited[getTileID(start)] = true
-  predecessors[getTileID(start)] = "NONE"
+  ready:enqueue(start)
+  visited[start] = true
+  predecessors[start] = "NONE"
   
   while not ready:isEmpty() do
     local current = ready:dequeue()
-    visitIfPossible(getTileToLeftOf(current))
-    visitIfPossible(getTileToRightOf(current))
-    visitIfPossible(getTileAbove(current))
-    visitIfPossible(getTileBelow(current))
+    visitIfPossible(current, getTileToLeftOf(current))
+    visitIfPossible(current, getTileToRightOf(current))
+    visitIfPossible(current, getTileAbove(current))
+    visitIfPossible(current, getTileBelow(current))
   end
 end
 
 function visitIfPossible(current, neighbor)
   if isVisitable(neighbor) then
-    ready:enqueue(getTileID(neighbor))
+    ready:enqueue(neighbor)
     visited[neighbor] = true
-    predecessors[getTileID(neighbor)] = getTileID(current)
+    predecessors[neighbor] = current
   end
 end
 
@@ -113,7 +111,7 @@ function clearDataStructures()
 end
 
 function isVisitable(tile)
-  return not world:isWall(tile.row, tile.col) and not visited[getTileID(tile)]
+  return not world:isWall(tile.row, tile.col) and not visited[tile]
 end
 
 function getTileToRightOf(currentTile)
@@ -147,5 +145,11 @@ function wrapBoundary(tile)
   
   return tile
 end
+
+
+
+-- getDirectionToMove should be all I have to call
+-- trace it and see if you can figure it out plz thx
+print(getDirectionToMove({row = 2, col = 2}, {row = 5, col = 2}))
 
 PLAYER_TICK = playerTick
