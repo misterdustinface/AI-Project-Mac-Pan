@@ -35,8 +35,7 @@ local function aStar(start, destination)
 end
 
 local function bfs(start, destination)
-  
-  -- base case prepare the start
+
   ready:enqueue(getTileID(start))
   visited[getTileID(start)] = true
   predecessors[getTileID(start)] = "NONE"
@@ -64,11 +63,7 @@ end
 
 
 function isVisitable(tile)
-  if not world:isWall(tile.row, tile.col) and not visited[tile.row .. "," .. tile.col] then
-    return true
-  else
-    return false
-  end
+  return not world:isWall(tile.row, tile.col) and not visited[getTileID(tile)]
 end
 
 local function playerTick()
