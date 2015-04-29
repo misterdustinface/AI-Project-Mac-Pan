@@ -3,6 +3,9 @@ local world = GAME:getModifiableWorld()
 local player = world:getPactor("PLAYER1")
 
 -- START FUNCTION DECLARATIONS BITCHES
+
+--SANTA'S LITTLE HELPER FUNCTIONS
+
 local wrapBoundary
 local getTileToRightOf
 local getTileToLeftOf
@@ -12,29 +15,65 @@ local getCoordinateID
 local visitIfPossible
 local getTileID
 local isVisitable
+local getDirectionToMove
+local determineDirectionToMove
+local clearDataStructures
+local getStartSuccessor
+
+  -- ALGORITHMS
+local bfs
+local aStar
+
 -- END FUNCTION DECLARATIONS BITCHES
-
-
--- START BFS DATA STRUCTURES
 
 --local openTiles = luajava.newInstance("java.util.PriorityQueue")
 --local closedTiles = luajava.newInstance("java.util.Stack")
 
+-- START BFS DATA STRUCTURES
 local visited = {}
 local ready = Queue:new()
 local predecessors = {}
-
-
-
 -- END BFS DATA STRUCTURES
 
 local board
 
-local function aStar(start, destination)
+function aStar(start, destination)
   board = world:getTiledBoard()
 end
 
-local function bfs(start, destination)
+function getDirectionToMove(start, destination)
+  clearDataStructures()
+  bfs(start)
+  return determineDirectionToMove(start, getStartSuccessor(start, destination))
+end
+
+function getStartSuccessor(start, destination)
+  local startSuccessor = predecessors[getTileID(destination)]
+  while predecessors[startSuccessor] ~= getTileID(start) do
+    startSuccessor = predecessors[startSuccessor]
+  end
+  return startSuccessor
+end
+
+function determineDirectionToMove(current, next)
+  if current.row < next.row then
+    return "DOWN"
+  end
+  
+  if current.row > next.row then
+    return "UP"
+  end
+  
+  if current.col < next.col then
+    return "RIGHT"
+  end
+  
+  if current.col > next.col then
+    return "LEFT"
+  end
+end
+
+function bfs(start)
 
   ready:enqueue(getTileID(start))
   visited[getTileID(start)] = true
@@ -61,16 +100,15 @@ function getTileID(tile)
   return tile.row .. "," .. tile.col
 end
 
+function clearDataStructures()
+  visited = {}
+  ready = Queue:new()
+  predecessors = {}
+end
 
 function isVisitable(tile)
   return not world:isWall(tile.row, tile.col) and not visited[getTileID(tile)]
 end
-
-local function playerTick()
-
-end
-
-
 
 function getTileToRightOf(currentTile)
   return wrapBoundary({row = currentTile.row, col = currentTile.col + 1})
