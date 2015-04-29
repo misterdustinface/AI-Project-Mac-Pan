@@ -19,6 +19,8 @@ local getDirectionToMove
 local determineDirectionToMove
 local clearDataStructures
 local getStartSuccessor
+local markAsVisited
+local setLeftPredecessorAsRight
 
   -- ALGORITHMS
 local bfs
@@ -30,9 +32,9 @@ local aStar
 --local closedTiles = luajava.newInstance("java.util.Stack")
 
 -- START BFS DATA STRUCTURES
-local visited = {}
-local ready = Queue:new()
-local predecessors = {}
+local visited
+local ready
+local predecessors
 -- END BFS DATA STRUCTURES
 
 local board
@@ -45,43 +47,51 @@ function getDirectionToMove(start, destination)
 end
 
 local function playerTick()
-
 end
 
 function aStar(start, destination)
   board = world:getTiledBoard()
 end
 
+function setLeftPredecessorAsRight(left, right)
+  predecessors[getTileID(left)] = getTileID(right)
+end
+
 function getStartSuccessor(start, destination)
-  local startSuccessor = predecessors[destination]
-  while predecessors[startSuccessor] ~= start do
-    startSuccessor = predecessors[startSuccessor]
+  local startSuccessor = predecessors[getTileID(destination)]
+  while predecessors[getTileID(startSuccessor)] ~= getTileID(start) do
+    print("CURRENT SUCCESSOR: " .. startSuccessor)
+    startSuccessor = predecessors[getTileID(startSuccessor)]
   end
   return startSuccessor
 end
 
-function determineDirectionToMove(current, next)
-  if current.row < next.row then
+function determineDirectionToMove(current, nextTile)
+  if current.row < nextTile.row then
     return "DOWN"
   end
   
-  if current.row > next.row then
+  if current.row > nextTile.row then
     return "UP"
   end
   
-  if current.col < next.col then
+  if current.col < nextTile.col then
     return "RIGHT"
   end
   
-  if current.col > next.col then
+  if current.col > nextTile.col then
     return "LEFT"
   end
 end
 
+function markAsVisited(tile)
+  visited[getTileID(tile)] = tile
+end
+
 function bfs(start)
   ready:enqueue(start)
-  visited[start] = true
-  predecessors[start] = "NONE"
+  markAsVisited(start)
+  predecessors[start] = {row = -1, col = -1}
   
   while not ready:isEmpty() do
     local current = ready:dequeue()
@@ -94,9 +104,10 @@ end
 
 function visitIfPossible(current, neighbor)
   if isVisitable(neighbor) then
+    print("VISITING: " .. current.row .. ", " .. current.col)
     ready:enqueue(neighbor)
-    visited[neighbor] = true
-    predecessors[neighbor] = current
+    markAsVisited(neighbor)
+    setLeftPredecessorAsRight(neighbor, current)
   end
 end
 
@@ -111,7 +122,8 @@ function clearDataStructures()
 end
 
 function isVisitable(tile)
-  return not world:isWall(tile.row, tile.col) and not visited[tile]
+  -- isWall is expecting 0 base indexing
+  return not world:isWall(tile.row - 1, tile.col - 1) and not visited[getTileID(tile)]
 end
 
 function getTileToRightOf(currentTile)
@@ -138,18 +150,14 @@ function wrapBoundary(tile)
   end
   
   if tile.col < 1 then
-    tile.col = board[0].length
-  elseif tile.col > board[0].length then
+    tile.col = board[1].length
+  elseif tile.col > board[1].length then
     tile.col = 1
   end
   
   return tile
 end
 
-
-
--- getDirectionToMove should be all I have to call
--- trace it and see if you can figure it out plz thx
 print(getDirectionToMove({row = 2, col = 2}, {row = 5, col = 2}))
 
 PLAYER_TICK = playerTick
