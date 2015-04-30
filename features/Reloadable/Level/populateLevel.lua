@@ -8,6 +8,7 @@ local player = Player:new()
 world:addPactor("PLAYER1", player)
 world:setPactorSpawn("PLAYER1", 17, 14)
 world:respawnPactor("PLAYER1")
+world:setTileAsTraversableForPactor("FLOOR", "PLAYER1")
 
 local Pickup = require("PacDaddyGameWrapper/PointsPickup")
 local pickup = Pickup:new()

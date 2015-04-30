@@ -25,6 +25,7 @@ local wasVisited
 local getPredecessorOf
 local setPredecessorOf
 local getCoordinateOfPactor
+local isTraversable
 
   -- ALGORITHMS
 local bfs
@@ -78,8 +79,7 @@ function visit(tile)
 end
 
 function isVisitable(tile)
-  -- isWall is expecting 0 based indexing
-  return not world:isWall(tile.row - 1, tile.col - 1) and not wasVisited(tile)
+  return isTraversable(tile) and not wasVisited(tile)
 end
 
 function markAsVisited(tile)
@@ -163,6 +163,11 @@ function getCoordinateOfPactor(name)
   local row = world:getRowOf(name) + 1
   local col = world:getColOf(name) + 1
   return { row = row, col = col}
+end
+
+function isTraversable(tile)
+  -- expecting 0 based indexing
+  return world:isTraversableForPactor(tile.row - 1, tile.col - 1, "PLAYER1")
 end
 
 local function playerTick()
