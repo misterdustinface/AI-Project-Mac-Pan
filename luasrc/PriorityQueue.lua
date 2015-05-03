@@ -1,130 +1,98 @@
---local public = {}
---
---local function percolateUp()
---
---end
---
---local function add(this, element)
---    local head = this:peek()
---    
---    if not head then
---        table.insert(this.heap, element)
---        return
---    end
---    
---    local path = this.comparator(head, element)
---    
---    if path < 0 then
---    
---    else
---    
---    end
---end
---
---local function setComparator(this, comparatorFunction)
---    this.comparator = comparatorFunction
---end
---
---local function peek(this)
---    return this.heap[1]
---end
---
---local function poll(this)
---
---end
---
---local function size(this)
---
---end
---
---local function clear(this)
---    this.size = 0
---end
---
---local function new(this)
---    
---    local newPriorityQueue = {
---        heap = {},
---        size = 0,
---        add = add,
---        offer = add,
---        setComparator = setComparator,
---        peek = peek,
---        poll = poll,
---        size = size,
---        clear = clear,
---    }
---    
---    return newPriorityQueue
---end
---
---public.new = new
---
---return public
-
 -- https://gist.github.com/leegao/1074642
+local push
+local pushAll
+local setComparator
+local pop
+local peek
+local isEmpty
+local size
+local clear
 
 local table = require "table"
 local insert = table.insert
 local remove = table.remove
 
-local priority_queue = {}
+local public = {}
 
-function priority_queue.new(comparator, initial)
-    local cmp = comparator or function(a,b) return a < b end
-
-    local pq = setmetatable({}, {
-        __index = {
-            size = 0,
-            push = function(self, v)
-                insert(self, v)
-                local next = #self
-                local prev = (next-next%2)/2
-                while next > 1 and cmp(self[next], self[prev]) do
-                    self[next], self[prev] = self[prev], self[next]
-                    next = prev
-                    prev = (next-next%2)/2
-                end
-            end,
-            pop = function(self)
-                if #self < 2 then
-                    return remove(self)
-                end
-                local root = 1
-                local r = self[root]
-                self[root] = remove(self)
-                local size = #self
-                if size > 1 then
-                    local child = 2*root
-                    while child <= size do
-                        if cmp(self[child], self[root]) then
-                            self[root], self[child] = self[child], self[root]
-                            root = child
-                        elseif child+1 <= size and cmp(self[child+1], self[root]) then
-                            self[root], self[child+1] = self[child+1], self[root]
-                            root = child+1
-                        else
-                            break
-                        end
-                        child = 2*root
-                    end
-                end
-                return r
-            end,
-            peek = function(self)
-                return self[1]
-            end,
-            isEmpty = function(self)
-                return self.size == 0
-            end,
-        }
-    })
-
-    for _,el in ipairs(initial or {}) do
-        pq:push(el)
-    end
-
-    return pq
+function setComparator(this, comparator)
+    this.comparator = comparator or function(a,b) return a < b end
 end
 
-return priority_queue
+function pushAll(this, elements)
+    for _, element in ipairs(elements or {}) do
+        this:push(element)
+    end
+end
+
+function push(pq, element)
+    insert(pq, element)
+    local next = #pq
+    local prev = (next-next%2)/2
+    while next > 1 and pq.comparator(pq[next], pq[prev]) do
+        pq[next], pq[prev] = pq[prev], pq[next]
+        next = prev
+        prev = (next-next%2)/2
+    end
+end
+
+function pop(pq)
+    if #pq < 2 then
+        return remove(pq)
+    end
+    local root = 1
+    local r = pq[root]
+    pq[root] = remove(pq)
+    local size = #pq
+    if size > 1 then
+        local child = 2*root
+        while child <= size do
+            if pq.comparator(pq[child], pq[root]) then
+                pq[root], pq[child] = pq[child], pq[root]
+                root = child
+            elseif child+1 <= size and pq.comparator(pq[child+1], pq[root]) then
+                pq[root], pq[child+1] = pq[child+1], pq[root]
+                root = child+1
+            else
+                break
+            end
+            child = 2*root
+        end
+    end
+    return r
+end
+
+function peek(pq)
+    return pq[1]
+end
+
+function isEmpty(pq)
+    return pq:size() == 0
+end
+
+function size(pq)
+    return pq.size
+end
+
+function clear(pq)
+    while not pq:isEmpty() do
+        pq:pop()
+    end
+end
+
+function public.new(this)
+    return setmetatable({}, {
+        __index = {
+            size = 0,
+            push = push,
+            pushAll = pushAll,
+            setComparator = setComparator,
+            pop = pop,
+            peek = peek,
+            isEmpty = isEmpty,
+            size = size,
+            clear = clear,
+        }
+    })
+end
+
+return public
