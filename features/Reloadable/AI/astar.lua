@@ -37,7 +37,13 @@ local start
 local destination
 
 local function tileComparator(A, B)
-  return A.f < B.f
+  if A.f and B.f then
+    return A.f < B.f
+  elseif A.f then
+    return A.f
+  else
+    return B.f
+  end
 end
 
 function initDataStructures()
