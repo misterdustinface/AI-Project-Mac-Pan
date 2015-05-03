@@ -19,11 +19,11 @@ world:respawnPactor(pactorName)
 
 
 
---local frienemy = Enemy:new()
---world:addPactor("FRIENEMY", frienemy)
---world:setPactorSpawn("FRIENEMY", 13, 13)
---world:setPactorSpeed("FRIENEMY", 0.5)
---world:respawnPactor("FRIENEMY")
+local frienemy = Enemy:new()
+world:addPactor("FRIENEMY", frienemy)
+world:setPactorSpawn("FRIENEMY", 12, 12)
+world:setPactorSpeed("FRIENEMY", 0.5)
+world:respawnPactor("FRIENEMY")
 --
 --local frienemy2 = Enemy:new()
 --world:addPactor("FRIENEMY2", frienemy2)
