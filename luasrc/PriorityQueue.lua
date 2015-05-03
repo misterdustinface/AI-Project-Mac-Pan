@@ -26,7 +26,7 @@ end
 
 function push(pq, element)
     insert(pq, element)
-    local next = #pq
+    local next = pq:size()
     local prev = (next-next%2)/2
     while next > 1 and pq.comparator(pq[next], pq[prev]) do
         pq[next], pq[prev] = pq[prev], pq[next]
@@ -36,13 +36,15 @@ function push(pq, element)
 end
 
 function pop(pq)
-    if #pq < 2 then
+    local size = pq:size()
+    if size < 2 then
         return remove(pq)
     end
+    
     local root = 1
     local r = pq[root]
     pq[root] = remove(pq)
-    local size = #pq
+    
     if size > 1 then
         local child = 2*root
         while child <= size do
@@ -58,6 +60,7 @@ function pop(pq)
             child = 2*root
         end
     end
+    
     return r
 end
 
@@ -70,7 +73,7 @@ function isEmpty(pq)
 end
 
 function size(pq)
-    return pq.size
+    return #pq
 end
 
 function clear(pq)
@@ -82,7 +85,6 @@ end
 function public.new(this)
     return setmetatable({}, {
         __index = {
-            size = 0,
             push = push,
             pushAll = pushAll,
             setComparator = setComparator,
