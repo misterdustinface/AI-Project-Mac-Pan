@@ -32,23 +32,20 @@ local clear = function(thisQueue)
   thisQueue.elements = {}
 end
 
-local function new(this) 
-
-    local newQueue = {
-      elements = {},
-      size = size,
-      enqueue = enqueue,
-      dequeue = dequeue, 
-      peek = peek,
-      isEmpty = isEmpty,
-      toString = toString,
-      get = get,
-      clear = clear
-    }
-
-    return newQueue 
+function public.new(this) 
+    return setmetatable({}, {
+        __index = {
+            elements = {},
+            size = size,
+            enqueue = enqueue,
+            dequeue = dequeue, 
+            peek = peek,
+            isEmpty = isEmpty,
+            toString = toString,
+            get = get,
+            clear = clear
+        }
+    })
 end
-
-public.new = new
 
 return public
