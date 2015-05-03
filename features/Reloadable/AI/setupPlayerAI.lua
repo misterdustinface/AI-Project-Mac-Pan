@@ -1,6 +1,6 @@
 local world = GAME:getModifiableWorld()
 local player = world:getPactor("PLAYER1")
-local searchAlg = require("features/Reloadable/AI/bfs")
+local searchAlg = require("features/Reloadable/AI/astar")
 
 local getDirectionToMove
 local getCoordinateOfPactor
@@ -20,9 +20,9 @@ function getDirectionToMove(start, goal)
 end
 
 local function playerTick()
-  local playerCoordinate = getCoordinateOfPactor("PLAYER1")
-  local goalExists, goalCoordinate = pcall(getCoordinateOfPactor, "GOAL")
-  if goalExists then
+  local playerExists, playerCoordinate = pcall(getCoordinateOfPactor, "PLAYER1")
+  local goalExists,   goalCoordinate   = pcall(getCoordinateOfPactor, "GOAL")
+  if playerExists and goalExists then
     local direction = getDirectionToMove(playerCoordinate, goalCoordinate)
     player:performAction(direction)
   end

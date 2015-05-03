@@ -1,7 +1,7 @@
 local PriorityQueue = require("luasrc/PriorityQueue")
 local world = GAME:getModifiableWorld()
 
-local bfs
+local astar
 local wrapBoundary
 local getTileToRightOf
 local getTileToLeftOf
@@ -37,12 +37,32 @@ local start
 local destination
 
 local function tileComparator(A, B)
-  if A.f and B.f then
-    return A.f < B.f
-  elseif A.f then
-    return A.f
+  if A and B then
+    if A.f and B.f then
+      return A.f < B.f
+    elseif A.f then
+      return A.f
+    else
+      return B.f
+    end
   else
-    return B.f
+    return A or B
+  end
+end
+
+local function manhattanDistance(A, B)
+  return math.abs(A.row - B.row) + math.abs(A.col - B.col)
+end
+
+local function calculateFScoreOf(tile)
+  local pred = getPredecessorOf(tile)
+  if pred then
+    tile.g = pred.g + 1
+    tile.h = manhattanDistance(tile, destination)
+    tile.f = tile.g + tile.h
+  else
+    tile.g = 0
+    tile.f = 0
   end
 end
 
@@ -53,7 +73,7 @@ function initDataStructures()
   ready:setComparator(tileComparator)
 end
 
-function bfs(start)
+function astar(start)
   visit(start)
   
   while not ready:isEmpty() do
@@ -73,7 +93,7 @@ function visitIfPossible(current, neighbor)
 end
 
 function visit(tile)
-  tile.f = 0
+  calculateFScoreOf(tile)
   ready:push(tile)
   markAsVisited(tile)
 end
@@ -178,7 +198,7 @@ end
 
 function bestMove(this)
   initDataStructures()
-  bfs(start)
+  astar(start)
   local bestNextTile = getStartSuccessor(start, destination)
   return determineDirectionToMove(start, bestNextTile)
 end
