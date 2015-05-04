@@ -83,6 +83,7 @@ end
 
 function visitIfPossible(current, neighbor)
   if isVisitable(neighbor) then
+    -- Note to self: when in doubt, check the order in which functions are called
     setPredecessorOf(neighbor, current)
     visit(neighbor)
   end
