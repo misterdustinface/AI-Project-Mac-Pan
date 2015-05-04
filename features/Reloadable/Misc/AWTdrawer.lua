@@ -14,7 +14,7 @@ local borderWidth  = 40
 
 local colormap = {
     ["PLAYER"]        = Color.YELLOW,
-    ["ENEMY"]         = Color.RED,
+    ["ENEMY"]         = Color.ORANGE,
     ["WALL"]          = Color.BLUE,
     ["FLOOR"]         = Color.BLACK,
     ["ENEMY_SPAWN"]   = Color.GRAY,
