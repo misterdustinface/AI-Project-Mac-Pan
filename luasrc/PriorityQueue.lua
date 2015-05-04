@@ -7,6 +7,7 @@ local peek
 local isEmpty
 local size
 local clear
+local compare
 
 local table = require "table"
 local insert = table.insert
@@ -15,7 +16,11 @@ local remove = table.remove
 local public = {}
 
 function setComparator(this, comparator)
-    this.comparator = comparator or function(a,b) return a < b end
+    this.comparator = comparator or (function(a,b) return a < b end)
+end
+
+function compare(this, A, B)
+    return this.comparator(A, B)
 end
 
 function pushAll(this, elements)
@@ -25,47 +30,53 @@ function pushAll(this, elements)
 end
 
 function push(pq, element)
-    insert(pq, element)
-    local next = pq:size()
-    local prev = (next-next%2)/2
-    while next > 1 and pq.comparator(pq[next], pq[prev]) do
-        pq[next], pq[prev] = pq[prev], pq[next]
-        next = prev
-        prev = (next-next%2)/2
+    local elements = pq.elements
+    insert(elements, element)
+    if pq:size() > 1 then
+        local next = pq:size()
+        local prev = (next-(next%2))/2
+        while next > 1 and pq:compare(elements[next], elements[prev]) do
+            elements[next], elements[prev] = elements[prev], elements[next]
+            next = prev
+            prev = (next-next%2)/2
+        end
     end
 end
 
 function pop(pq)
     local size = pq:size()
-    if size < 2 then
-        return remove(pq)
-    end
+    local elements = pq.elements
     
-    local root = 1
-    local r = pq[root]
-    pq[root] = remove(pq)
-    
-    if size > 1 then
+    if size == 0 then
+        return nil
+    elseif size == 1 then
+        return remove(elements)
+    else
+        local root = 1
+        local r = elements[root]
+        elements[root] = remove(elements)
+        size = size - 1
+        
         local child = 2*root
         while child <= size do
-            if pq.comparator(pq[child], pq[root]) then
-                pq[root], pq[child] = pq[child], pq[root]
+            if pq:compare(elements[child], elements[root]) then
+                elements[root], elements[child] = elements[child], elements[root]
                 root = child
-            elseif child+1 <= size and pq.comparator(pq[child+1], pq[root]) then
-                pq[root], pq[child+1] = pq[child+1], pq[root]
+            elseif child+1 <= size and pq:compare(elements[child+1], elements[root]) then
+                elements[root], elements[child+1] = elements[child+1], elements[root]
                 root = child+1
             else
                 break
             end
             child = 2*root
         end
-    end
     
-    return r
+        return r
+    end
 end
 
 function peek(pq)
-    return pq[1]
+    return pq.elements[1]
 end
 
 function isEmpty(pq)
@@ -73,7 +84,7 @@ function isEmpty(pq)
 end
 
 function size(pq)
-    return #pq
+    return #(pq.elements)
 end
 
 function clear(pq)
@@ -85,6 +96,7 @@ end
 function public.new(this)
     return setmetatable({}, {
         __index = {
+            elements = {},
             push = push,
             pushAll = pushAll,
             setComparator = setComparator,
@@ -93,6 +105,7 @@ function public.new(this)
             isEmpty = isEmpty,
             size = size,
             clear = clear,
+            compare = compare,
         }
     })
 end
