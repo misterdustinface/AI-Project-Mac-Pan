@@ -56,8 +56,8 @@ end
 
 function visitIfPossible(current, neighbor)
   if isVisitable(neighbor) then
-    visit(neighbor)
     setPredecessorOf(neighbor, current)
+    visit(neighbor)
   end
 end
 

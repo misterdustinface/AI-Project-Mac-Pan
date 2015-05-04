@@ -37,16 +37,12 @@ local start
 local destination
 
 local function tileComparator(A, B)
-  if A and B then
-    if A.f and B.f then
-      return A.f < B.f
-    elseif A.f then
-      return A.f
-    else
-      return B.f
-    end
+  if A.f and B.f then
+    return A.f < B.f
+  elseif A.f then
+    return A.f
   else
-    return A or B
+    return B.f
   end
 end
 
@@ -87,8 +83,8 @@ end
 
 function visitIfPossible(current, neighbor)
   if isVisitable(neighbor) then
-    visit(neighbor)
     setPredecessorOf(neighbor, current)
+    visit(neighbor)
   end
 end
 
@@ -103,7 +99,7 @@ function isVisitable(tile)
 end
 
 function markAsVisited(tile)
-  visited[getTileID(tile)] = tile
+  visited[getTileID(tile)] = true
 end
 
 function wasVisited(tile)
