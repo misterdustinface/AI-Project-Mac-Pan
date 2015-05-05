@@ -5,6 +5,8 @@ local searchAlg = require("features/Reloadable/AI/astar")
 local getDirectionToMove
 local getCoordinateOfPactor
 
+local directions = {}
+
 function getCoordinateOfPactor(name)
   local row = world:getRowOf(name) + 1
   local col = world:getColOf(name) + 1
@@ -24,11 +26,20 @@ local function playerTick()
   local goalExists,   goalCoordinate   = pcall(getCoordinateOfPactor, "GOAL")
   if playerExists and goalExists then
     local direction = getDirectionToMove(playerCoordinate, goalCoordinate)
-    player:performAction(direction)
+    directions["Player1"] = direction
+  else
+    directions["Player1"] = nil
   end
 end
 
+local function playerPerform()
+    if directions["Player1"] then
+      player:performAction(directions["Player1"])
+    end
+end
+
 PLAYER_TICK = playerTick
+PLAYER_PERFORM = playerPerform
 
 --print(getDirectionToMove({row = 2, col = 2}, {row = 5, col = 2}))
 --print("!!! DONE !!!")
