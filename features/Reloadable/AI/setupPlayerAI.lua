@@ -10,7 +10,7 @@ local directions = {}
 function getCoordinateOfPactor(name)
   local row = world:getRowOf(name) + 1
   local col = world:getColOf(name) + 1
-  return { row = row, col = col}
+  return { row = row, col = col }
 end
 
 function getDirectionToMove(start, goal)
@@ -40,6 +40,3 @@ end
 
 PLAYER_TICK    = playerTick
 PLAYER_PERFORM = playerPerform
-
---print(getDirectionToMove({row = 2, col = 2}, {row = 5, col = 2}))
---print("!!! DONE !!!")

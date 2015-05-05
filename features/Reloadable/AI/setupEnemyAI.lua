@@ -1,31 +1,36 @@
 local world = GAME:getModifiableWorld()
 
---local frienemy = world:getPactor("FRIENEMY")
+local directions = {}
 
-local function followPlayer1()
---    local player1Pos = { row = world:getRowOf("PLAYER1"),  col = world:getColOf("PLAYER1") }
---    local myPos      = { row = world:getRowOf("FRIENEMY"), col = world:getColOf("FRIENEMY") }
---    
---    if player1Pos.row < myPos.row and not world:isWall(myPos.row-1, myPos.col) then
---        frienemy:performAction("UP")
---    elseif player1Pos.row > myPos.row and not world:isWall(myPos.row+1, myPos.col) then
---        frienemy:performAction("DOWN")
---    elseif player1Pos.col < myPos.col and not world:isWall(myPos.row, myPos.col-1) then
---        frienemy:performAction("LEFT")
---    elseif player1Pos.col > myPos.col and not world:isWall(myPos.row, myPos.col+1) then
---        frienemy:performAction("RIGHT")
---    end
+local function followPlayer1(name)
+    local frienemy = world:getPactor(name)
+    if frienemy then
+        local player1Pos = { row = world:getRowOf("PLAYER1"),  col = world:getColOf("PLAYER1") }
+        local myPos      = { row = world:getRowOf(name), col = world:getColOf(name) }
+        
+        if player1Pos.row < myPos.row and world:canPactorMoveInDirection(name, "UP") then
+            directions[name] = "UP"
+        elseif player1Pos.row > myPos.row and world:canPactorMoveInDirection(name, "DOWN") then
+            directions[name] = "DOWN"
+        end
+        
+        if player1Pos.col < myPos.col and world:canPactorMoveInDirection(name, "LEFT") then
+            directions[name] = "LEFT"
+        elseif player1Pos.col > myPos.col and world:canPactorMoveInDirection(name, "RIGHT") then
+            directions[name] = "RIGHT"
+        end
+    end
 end
 
---frienemy:learnAction("FOLLOW_PLAYER1", VoidFunctionPointer(followPlayer1))
-
 local function enemyTick()
-    --frienemy:performAction("FOLLOW_PLAYER1")
-    -- TODO
+    followPlayer1("FRIENEMY")
 end
 
 local function enemyPerform()
-
+    local frienemy = world:getPactor("FRIENEMY")
+    if frienemy then
+        frienemy:performAction(directions["FRIENEMY"])    
+    end
 end
 
 ENEMY_TICK    = enemyTick
