@@ -28,5 +28,5 @@ local function enemyPerform()
 
 end
 
-ENEMY_TICK = enemyTick
+ENEMY_TICK    = enemyTick
 ENEMY_PERFORM = enemyPerform

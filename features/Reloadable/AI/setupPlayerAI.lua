@@ -38,7 +38,7 @@ local function playerPerform()
     end
 end
 
-PLAYER_TICK = playerTick
+PLAYER_TICK    = playerTick
 PLAYER_PERFORM = playerPerform
 
 --print(getDirectionToMove({row = 2, col = 2}, {row = 5, col = 2}))

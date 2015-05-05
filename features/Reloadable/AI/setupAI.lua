@@ -1,6 +1,9 @@
-local function callAllAITicks()
-    ENEMY_TICK()
+local function callPlayerAITick()
     PLAYER_TICK()
+end
+
+local function callAllEnemyAITicks()
+    ENEMY_TICK()
 end
 
 local function performAllAIMoves()
@@ -8,7 +11,9 @@ local function performAllAIMoves()
     PLAYER_PERFORM()
 end
 
-AI_TICK = callAllAITicks
-AI_PERFORM = performAllAIMoves
+PLAYER_AI_TICK = callPlayerAITick
+AI_TICK        = callAllEnemyAITicks
+AI_PERFORM     = performAllAIMoves
 
-AI_TICK_LOOP:setUpdatesPerSecond(30)
+AI_TICK_LOOP:setUpdatesPerSecond(15)
+PLAYER_AI_TICK_LOOP:setUpdatesPerSecond(30)
