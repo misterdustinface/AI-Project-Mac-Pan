@@ -37,7 +37,7 @@ local function playerTickWithGravityMap()
     gravityMap:setWeights({ ENEMY = -4000, PICKUP = 2000})
     gravityMap:setDegeneracyFunction( degenerate )
     gravityMap:generate()
-    gravityMap:print()
+    --gravityMap:print()
     primaryDirection["PLAYER1"] = gravityMap:bestMove("PLAYER1")
     secondaryDirection["PLAYER1"] = gravityMap:bestSecondaryMove("PLAYER1")
 end
