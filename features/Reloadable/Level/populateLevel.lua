@@ -18,6 +18,13 @@ world:setPactorSpawn("GOAL", 1, 1)
 world:respawnPactor("GOAL")
 world:setTileAsTraversableForPactor("FLOOR", "GOAL")
 
+local pickup2 = Pickup:new()
+local pactorName = "GOAL2"
+world:addPactor("GOAL2", pickup2)
+world:setPactorSpawn("GOAL2", 1, 18)
+world:respawnPactor("GOAL2")
+world:setTileAsTraversableForPactor("FLOOR", "GOAL2")
+
 --local frienemy = Enemy:new()
 --world:addPactor("FRIENEMY", frienemy)
 --world:setPactorSpawn("FRIENEMY", 13, 13)

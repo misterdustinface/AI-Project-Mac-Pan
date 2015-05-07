@@ -83,6 +83,7 @@ function applyGravityFieldToMap(gravMap, coor)
     local hasHitFieldLimit = getGravityFieldLimitFunction(coor.weight)
     clearActors(gravMap)
     clearVisited(gravMap)
+    coor.depth = 0
     applyGravity(gravMap, coor)
     while hasActors(gravMap) do
         local current = dequeueActor(gravMap)
@@ -117,13 +118,14 @@ function applyGravity(gravMap, coor)
     setVisited(gravMap, coor)
     if canBodyAffectTile(getCurrentBody(gravMap), coor) then
         addWeightToMap(gravMap, coor)
-        local weight = degenerateGravityWeight(gravMap, coor.weight)
+        local depth = coor.depth + 1
+        local weight = degenerateGravityWeight(gravMap, coor.weight, depth)
         local row = coor.row
         local col = coor.col
-        enqueueActor(gravMap, { row = wrapRow(gravMap, row + 1), col = col, weight = weight })
-        enqueueActor(gravMap, { row = wrapRow(gravMap, row - 1), col = col, weight = weight })
-        enqueueActor(gravMap, { row = row, col = wrapCol(gravMap, col + 1), weight = weight })
-        enqueueActor(gravMap, { row = row, col = wrapCol(gravMap, col - 1), weight = weight })
+        enqueueActor(gravMap, { row = wrapRow(gravMap, row + 1), col = col, weight = weight, depth = depth })
+        enqueueActor(gravMap, { row = wrapRow(gravMap, row - 1), col = col, weight = weight, depth = depth })
+        enqueueActor(gravMap, { row = row, col = wrapCol(gravMap, col + 1), weight = weight, depth = depth })
+        enqueueActor(gravMap, { row = row, col = wrapCol(gravMap, col - 1), weight = weight, depth = depth })
     end
 end
 
@@ -169,8 +171,8 @@ end
 function getCurrentBody(gravMap)
     return gravMap.currentPactor
 end
-function degenerateGravityWeight(gravMap, weight)
-    return gravMap.degeneracyFunction(weight)
+function degenerateGravityWeight(gravMap, weight, depth)
+    return gravMap.degeneracyFunction(weight, depth)
 end
 function addWeightToMap(gravMap, coor)
     local row = coor.row
