@@ -50,25 +50,32 @@ local function wrapRow(gravMap, row)
   return row
 end
 
+local function getBodyWeight(gravMap, body)
+    local bodyWeight
+    local world = GAME:getModifiableWorld()
+    local pactorExists, pactor = pcall(world.getPactor, world, body)
+    if pactorExists and pactor then
+        local typeExists, bodyType = pcall(pactor.getValueOf, pactor, "TYPE")
+        if typeExists and bodyType then
+            bodyWeight = gravMap.weights[bodyType]
+        end
+    end
+    return bodyWeight
+end
+
 function generate(gravMap)
     resetMap(gravMap)
     local world = GAME:getModifiableWorld()
-    local pactorNames = world:getPactorNames()    
+    local pactorNames = world:getPactorNames()
     
     for i = 1, pactorNames.length do
         local body = pactorNames[i]
-        local pactorExists, pactor = pcall(world.getPactor, world, body)
-        if pactorExists then
-            local typeExists, bodyType = pcall(pactor.getValueOf, pactor, "TYPE")
-            if typeExists then
-              local bodyWeight = gravMap.weights[bodyType]
-              if bodyWeight then
-                  setCurrentBody(gravMap, body)
-                  local coor = getCoordinateOfPactor(body)
-                  coor.weight = bodyWeight
-                  applyGravityFieldToMap(gravMap, coor)
-              end
-            end
+        local bodyWeight = getBodyWeight(gravMap, body)
+        if bodyWeight then
+            setCurrentBody(gravMap, body)
+            local coor = getCoordinateOfPactor(body)
+            coor.weight = bodyWeight
+            applyGravityFieldToMap(gravMap, coor)
         end
     end
     
@@ -203,7 +210,7 @@ local function isTravsersableForPactor(row, col, pactor)
 end
 
 local function bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
-    local bestMove = { direction = "NONE", weight = 0 }
+    local bestMove = { direction = "NONE", weight = -(math.huge) }
 
     if coordinate then
         local map = gravMap:getGeneratedMap()

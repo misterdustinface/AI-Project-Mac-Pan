@@ -9,20 +9,8 @@ local function new()
     enemy:setAttribute("TYPE", "ENEMY")
     enemy:setAttribute("VALUE", 200)
     
-    local oppositeDirectionTable = {
-      ["UP"] = "DOWN",
-      ["DOWN"] = "UP",
-      ["LEFT"] = "RIGHT",
-      ["RIGHT"] = "LEFT",
-      ["NONE"] = "NONE",
-    }
-    
     local function onPactorCollision(otherPactorAttributes)
-        if otherPactorAttributes:getValueOf("IS_ENEMY") then
-            local myCurrentDirection = enemy:getValueOf("DIRECTION")
-            local myOppositeDirection = oppositeDirectionTable[myCurrentDirection]
-            enemy:performAction(myOppositeDirection)
-        end
+        -- NA
     end
     
     enemy:setOnCollisionFunction(PactorCollisionFunction(onPactorCollision))
