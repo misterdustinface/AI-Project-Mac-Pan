@@ -6,7 +6,8 @@ local GravityMap = require("features/Reloadable/AI/GravityMap")
 local getDirectionToMove
 local getCoordinateOfPactor
 
-local directions = {}
+local primaryDirection   = { ["PLAYER1"] = "NONE" }
+local secondaryDirection = { ["PLAYER1"] = "NONE" }
 
 local gravityMap = GravityMap:new()
 
@@ -32,29 +33,34 @@ local function degenerate(weight)
     end
 end
 
-local function playerTick()
-
+local function playerTickWithGravityMap()
     gravityMap:setWeights({ ENEMY = -100, PICKUP = 80})
     gravityMap:setDegeneracyFunction( degenerate )
     gravityMap:generate()
     --gravityMap:print()
-    directions["PLAYER1"] = gravityMap:bestMove("PLAYER1")
-  
+    primaryDirection["PLAYER1"] = gravityMap:bestMove("PLAYER1")
+    secondaryDirection["PLAYER1"] = gravityMap:bestSecondaryMove("PLAYER1")
+end
+
+--local function playerTickWithSearch()
 --  local playerExists, playerCoordinate = pcall(getCoordinateOfPactor, "PLAYER1")
 --  local goalExists,   goalCoordinate   = pcall(getCoordinateOfPactor, "GOAL")
 --  if playerExists and goalExists then
 --    local direction = getDirectionToMove(playerCoordinate, goalCoordinate)
---    directions["Player1"] = direction
+--    primaryDirection["Player1"] = direction
 --  else
---    directions["Player1"] = nil
+--    primaryDirection["Player1"] = "NONE"
 --  end
-end
+--end
 
-local function playerPerform()
-    if directions["PLAYER1"] then
-      player:performAction(directions["PLAYER1"])
+local function playerPerform()    
+    if player:getValueOf("DIRECTION") == "NONE" then
+        player:performAction(primaryDirection["PLAYER1"])
+    else
+        player:performAction(primaryDirection["PLAYER1"])
+        player:performAction(secondaryDirection["PLAYER1"])
     end
 end
 
-PLAYER_TICK    = playerTick
+PLAYER_TICK    = playerTickWithGravityMap
 PLAYER_PERFORM = playerPerform

@@ -16,4 +16,4 @@ AI_TICK        = callAllEnemyAITicks
 AI_PERFORM     = performAllAIMoves
 
 AI_TICK_LOOP:setUpdatesPerSecond(15)
-PLAYER_AI_TICK_LOOP:setUpdatesPerSecond(30)
+PLAYER_AI_TICK_LOOP:setUpdatesPerSecond(15)

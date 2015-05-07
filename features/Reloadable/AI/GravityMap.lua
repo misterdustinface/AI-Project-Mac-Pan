@@ -22,7 +22,7 @@ local setVisited
 local wasVisited
 local setCurrentBody
 local getCurrentBody
-local degenerateGravityMagnitude
+local degenerateGravityWeight
 local addWeightToMap
 
 local function getCoordinateOfPactor(name)
@@ -30,68 +30,6 @@ local function getCoordinateOfPactor(name)
     local row = world:getRowOf(name) + 1
     local col = world:getColOf(name) + 1
     return { row = row, col = col }
-end
-
-function generate(gravMap)
-    resetMap(gravMap)
-    local world = GAME:getModifiableWorld()
-    local pactorNames = world:getPactorNames()    
-    
-    for i = 1, pactorNames.length do
-        local body = pactorNames[i]
-        local bodyType = world:getPactor(body):getValueOf("TYPE")
-        local bodyWeight = gravMap.weights[bodyType]
-        if bodyWeight then
-            setCurrentBody(gravMap, body)
-            local coor = getCoordinateOfPactor(body)
-            applyGravityFieldToMap(gravMap, coor.row, coor.col, bodyWeight)
-        end
-    end
-    
-    return getGeneratedMap(gravMap)
-end
-
-function getGravityFieldLimitFunction(startWeight)
-    local startedWithPositiveWeight = startWeight > 0
-    if startedWithPositiveWeight then
-        return (function(newWeight) return newWeight <= 0 end)
-    else
-        return (function(newWeight) return newWeight >= 0 end)
-    end
-end
-
-function applyGravityFieldToMap(gravMap, row, col, weight)
-    local hasHitFieldLimit = getGravityFieldLimitFunction(weight)
-    clearActors(gravMap)
-    clearVisited(gravMap)
-    applyGravity(gravMap, row, col, weight)
-    while hasActors(gravMap) do
-        local current = dequeueActor(gravMap)
-        applyGravityIfEligible(gravMap, current.row, current.col, current.magnitude, hasHitFieldLimit)
-    end
-end
-
-function resetMap(gravMap)
-    local world = GAME:getModifiableWorld()
-    local board = world:getTiledBoard()
-    local rows = board.length
-    local cols = board[1].length
-
-    gravMap.worldBoard = board
-    gravMap.map = {}
-    
-    for row = 1, rows do
-        gravMap.map[row] = {}
-        for col = 1, cols do
-            gravMap.map[row][col] = 0
-        end
-    end
-end
-
-function applyGravityIfEligible(gravMap, row, col, magnitude, hasHitFieldLimit)
-    if not wasVisited(gravMap, row, col) and not hasHitFieldLimit(magnitude) then
-        applyGravity(gravMap, row, col, magnitude)
-    end
 end
 
 local function wrapCol(gravMap, col)  
@@ -112,21 +50,86 @@ local function wrapRow(gravMap, row)
   return row
 end
 
-function applyGravity(gravMap, row, col, magnitude)
-    setVisited(gravMap, row, col)
-    if canBodyAffectTile(getCurrentBody(gravMap), row, col) then
-        addWeightToMap(gravMap, row, col, magnitude)
-        magnitude = degenerateGravityMagnitude(gravMap, magnitude)
-        enqueueActor(gravMap, { row = wrapRow(gravMap, row + 1), col = col, magnitude = magnitude })
-        enqueueActor(gravMap, { row = wrapRow(gravMap, row - 1), col = col, magnitude = magnitude })
-        enqueueActor(gravMap, { row = row, col = wrapCol(gravMap, col + 1), magnitude = magnitude })
-        enqueueActor(gravMap, { row = row, col = wrapCol(gravMap, col - 1), magnitude = magnitude })
+function generate(gravMap)
+    resetMap(gravMap)
+    local world = GAME:getModifiableWorld()
+    local pactorNames = world:getPactorNames()    
+    
+    for i = 1, pactorNames.length do
+        local body = pactorNames[i]
+        local bodyType = world:getPactor(body):getValueOf("TYPE")
+        local bodyWeight = gravMap.weights[bodyType]
+        if bodyWeight then
+            setCurrentBody(gravMap, body)
+            local coor = getCoordinateOfPactor(body)
+            coor.weight = bodyWeight
+            applyGravityFieldToMap(gravMap, coor)
+        end
+    end
+    
+    return getGeneratedMap(gravMap)
+end
+
+function getGravityFieldLimitFunction(startWeight)
+    local startedWithPositiveWeight = startWeight > 0
+    if startedWithPositiveWeight then
+        return (function(newWeight) return newWeight <= 0 end)
+    else
+        return (function(newWeight) return newWeight >= 0 end)
     end
 end
 
-function canBodyAffectTile(body, row, col)
+function applyGravityFieldToMap(gravMap, coor)
+    local hasHitFieldLimit = getGravityFieldLimitFunction(coor.weight)
+    clearActors(gravMap)
+    clearVisited(gravMap)
+    applyGravity(gravMap, coor)
+    while hasActors(gravMap) do
+        local current = dequeueActor(gravMap)
+        applyGravityIfEligible(gravMap, current, hasHitFieldLimit)
+    end
+end
+
+function resetMap(gravMap)
     local world = GAME:getModifiableWorld()
-    local ok, traversable = pcall(world.isTraversableForPactor, world, row - 1, col - 1, body)
+    local board = world:getTiledBoard()
+    local rows = board.length
+    local cols = board[1].length
+
+    gravMap.worldBoard = board
+    gravMap.map = {}
+    
+    for row = 1, rows do
+        gravMap.map[row] = {}
+        for col = 1, cols do
+            gravMap.map[row][col] = 0
+        end
+    end
+end
+
+function applyGravityIfEligible(gravMap, coor, hasHitFieldLimit)
+    if not wasVisited(gravMap, coor) and not hasHitFieldLimit(coor.weight) then
+        applyGravity(gravMap, coor)
+    end
+end
+
+function applyGravity(gravMap, coor)
+    setVisited(gravMap, coor)
+    if canBodyAffectTile(getCurrentBody(gravMap), coor) then
+        addWeightToMap(gravMap, coor)
+        local weight = degenerateGravityWeight(gravMap, coor.weight)
+        local row = coor.row
+        local col = coor.col
+        enqueueActor(gravMap, { row = wrapRow(gravMap, row + 1), col = col, weight = weight })
+        enqueueActor(gravMap, { row = wrapRow(gravMap, row - 1), col = col, weight = weight })
+        enqueueActor(gravMap, { row = row, col = wrapCol(gravMap, col + 1), weight = weight })
+        enqueueActor(gravMap, { row = row, col = wrapCol(gravMap, col - 1), weight = weight })
+    end
+end
+
+function canBodyAffectTile(body, coor)
+    local world = GAME:getModifiableWorld()
+    local ok, traversable = pcall(world.isTraversableForPactor, world, coor.row - 1, coor.col - 1, body)
     return ok and traversable
 end
 
@@ -154,11 +157,11 @@ end
 function clearVisited(gravMap)
     gravMap.visited = {}
 end
-function setVisited(gravMap, row, col)
-    gravMap.visited[row .. "," .. col] = true
+function setVisited(gravMap, coor)
+    gravMap.visited[coor.row .. "," .. coor.col] = true
 end
-function wasVisited(gravMap, row, col)
-    return gravMap.visited[row .. "," .. col]
+function wasVisited(gravMap, coor)
+    return gravMap.visited[coor.row .. "," .. coor.col]
 end
 function setCurrentBody(gravMap, body)
     gravMap.currentPactor = body
@@ -166,10 +169,13 @@ end
 function getCurrentBody(gravMap)
     return gravMap.currentPactor
 end
-function degenerateGravityMagnitude(gravMap, magnitude)
-    return gravMap.degeneracyFunction(magnitude)
+function degenerateGravityWeight(gravMap, weight)
+    return gravMap.degeneracyFunction(weight)
 end
-function addWeightToMap(gravMap, row, col, weight)
+function addWeightToMap(gravMap, coor)
+    local row = coor.row
+    local col = coor.col
+    local weight = coor.weight
     gravMap.map[row][col] = gravMap.map[row][col] + weight
 end
 
@@ -186,17 +192,15 @@ function printMap(gravMap)
 end
 
 local function isTravsersableForPactor(row, col, pactor)
-    return canBodyAffectTile(pactor, row, col)
+    return canBodyAffectTile(pactor, {row = row, col = col})
 end
 
-local function bestMove(gravMap, pactorName)
+local function bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
     local bestMove = { direction = "NONE", weight = 0 }
-    local map = gravMap:getGeneratedMap()
-    
-    local exists, coordinate = pcall(getCoordinateOfPactor, pactorName)
-    
-    if exists then
-        
+
+    if coordinate then
+        local map = gravMap:getGeneratedMap()
+
         if isTravsersableForPactor(coordinate.row - 1, coordinate.col, pactorName) then
             local weight = map[coordinate.row - 1][coordinate.col]
             if weight > bestMove.weight then
@@ -228,9 +232,40 @@ local function bestMove(gravMap, pactorName)
                 bestMove.direction = "LEFT"
             end
         end
+    
     end
     
     return bestMove.direction
+end
+
+local function bestMove(gravMap, pactorName)
+    local exists, coordinate = pcall(getCoordinateOfPactor, pactorName)
+    if not exists then 
+        coordinate = nil 
+    end
+    return bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
+end
+
+local coordinateModifiers = {
+    UP    = function(gravMap, coordinate) coordinate.row = wrapRow(gravMap, coordinate.row - 1) end,
+    DOWN  = function(gravMap, coordinate) coordinate.row = wrapRow(gravMap, coordinate.row + 1) end,
+    LEFT  = function(gravMap, coordinate) coordinate.col = wrapCol(gravMap, coordinate.col - 1) end,
+    RIGHT = function(gravMap, coordinate) coordinate.col = wrapCol(gravMap, coordinate.col + 1) end,
+}
+
+local function bestSecondaryMove(gravMap, pactorName)
+    local exists, coordinate = pcall(getCoordinateOfPactor, pactorName)
+    if not exists then 
+        coordinate = nil 
+    end
+
+    local direction = bestMove(gravMap, pactorName)
+    local coordinateModifier = coordinateModifiers[direction]
+    if type(coordinateModifier) == 'function' then
+        coordinateModifier(gravMap, coordinate)
+    end
+    
+    return bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
 end
 
 public.new = function(this)
@@ -240,6 +275,7 @@ public.new = function(this)
         generate = generate,
         getGeneratedMap = getGeneratedMap,
         bestMove = bestMove,
+        bestSecondaryMove = bestSecondaryMove,
         print = printMap,
         _actors = Queue:new(),
     }
