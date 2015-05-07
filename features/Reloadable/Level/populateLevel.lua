@@ -13,11 +13,10 @@ world:setTileAsTraversableForPactor("FLOOR", "PLAYER1")
 local Pickup = require("PacDaddyGameWrapper/PointsPickup")
 local pickup = Pickup:new()
 local pactorName = "GOAL"
-world:addPactor(pactorName, pickup)
-world:setPactorSpawn(pactorName, 1, 1)
-world:respawnPactor(pactorName)
-
-
+world:addPactor("GOAL", pickup)
+world:setPactorSpawn("GOAL", 1, 1)
+world:respawnPactor("GOAL")
+world:setTileAsTraversableForPactor("FLOOR", "GOAL")
 
 --local frienemy = Enemy:new()
 --world:addPactor("FRIENEMY", frienemy)
