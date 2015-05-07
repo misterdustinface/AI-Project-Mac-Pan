@@ -59,13 +59,15 @@ function generate(gravMap)
         local body = pactorNames[i]
         local pactorExists, pactor = pcall(world.getPactor, world, body)
         if pactorExists then
-            local bodyType = pactor:getValueOf("TYPE")
-            local bodyWeight = gravMap.weights[bodyType]
-            if bodyWeight then
-                setCurrentBody(gravMap, body)
-                local coor = getCoordinateOfPactor(body)
-                coor.weight = bodyWeight
-                applyGravityFieldToMap(gravMap, coor)
+            local typeExists, bodyType = pcall(pactor.getValueOf, pactor, "TYPE")
+            if typeExists then
+              local bodyWeight = gravMap.weights[bodyType]
+              if bodyWeight then
+                  setCurrentBody(gravMap, body)
+                  local coor = getCoordinateOfPactor(body)
+                  coor.weight = bodyWeight
+                  applyGravityFieldToMap(gravMap, coor)
+              end
             end
         end
     end
