@@ -1,76 +1,35 @@
-local world = GAME:getWorld()
+local poptable = dofile("levels/baselevelPopulate.lua")
 
 local Player = require("PacDaddyGameWrapper/Player")
 local Enemy  = require("PacDaddyGameWrapper/Enemy")
 local PointsPickup = require("PacDaddyGameWrapper/PointsPickup")
 
-local player = Player:new()
-world:addPactor("PLAYER1", player)
-world:setPactorSpawn("PLAYER1", 17, 14)
-world:respawnPactor("PLAYER1")
-world:setTileAsTraversableForPactor("FLOOR", "PLAYER1")
+local classmap = {
+  ["Player"] = Player,
+  ["Pickup"] = PointsPickup,
+  ["Enemy"]  = Enemy,
+}
 
-local Pickup = require("PacDaddyGameWrapper/PointsPickup")
-local pickup = Pickup:new()
-local pactorName = "GOAL"
-world:addPactor("GOAL", pickup)
-world:setPactorSpawn("GOAL", 1, 1)
-world:respawnPactor("GOAL")
-world:setTileAsTraversableForPactor("FLOOR", "GOAL")
+local function populate(poptable)
+    local world = GAME:getWorld()
+    for _, entity in ipairs(poptable) do
+        local name  = entity.name
+        local class = classmap[entity.class]
+        local obj   = class:new()
+        world:addPactor(name, obj)
+        local row, col = entity.row, entity.col
+        world:setPactorSpawn(name, row, col)
+        world:respawnPactor(name)
+        local travTilesTable = entity.traversable
+        for _, tile in ipairs(travTilesTable) do
+            world:setTileAsTraversableForPactor(tile, name)
+        end
+        
+        local speed = entity.speed
+        if speed then
+            world:setPactorSpeed(name, speed)
+        end
+    end
+end
 
-local pickup2 = Pickup:new()
-local pactorName = "GOAL2"
-world:addPactor("GOAL2", pickup2)
-world:setPactorSpawn("GOAL2", 1, 18)
-world:respawnPactor("GOAL2")
-world:setTileAsTraversableForPactor("FLOOR", "GOAL2")
-
-local pickup3 = Pickup:new()
-local pactorName = "GOAL3"
-world:addPactor("GOAL3", pickup3)
-world:setPactorSpawn("GOAL3", 10, 21)
-world:respawnPactor("GOAL3")
-world:setTileAsTraversableForPactor("FLOOR", "GOAL3")
-
-local pickup4 = Pickup:new()
-local pactorName = "GOAL4"
-world:addPactor("GOAL4", pickup4)
-world:setPactorSpawn("GOAL4", 24, 9)
-world:respawnPactor("GOAL4")
-world:setTileAsTraversableForPactor("FLOOR", "GOAL4")
-
-local frienemy = Enemy:new()
-world:addPactor("FRIENEMY", frienemy)
-world:setPactorSpawn("FRIENEMY", 14, 13)
-world:setPactorSpeed("FRIENEMY", 0.5)
-world:respawnPactor("FRIENEMY")
-world:setTileAsTraversableForPactor("FLOOR", "FRIENEMY")
-world:setTileAsTraversableForPactor("ENEMY_SPAWN", "FRIENEMY")
-
-local frienemy2 = Enemy:new()
-world:addPactor("FRIENEMY2", frienemy2)
-world:setPactorSpawn("FRIENEMY2", 14, 14)
-world:setPactorSpeed("FRIENEMY2", 0.3)
-world:respawnPactor("FRIENEMY2")
-world:setTileAsTraversableForPactor("FLOOR", "FRIENEMY2")
-world:setTileAsTraversableForPactor("ENEMY_SPAWN", "FRIENEMY2")
---
---local tilenames = GAME:getTileNames()
---local board = GAME:getTiledBoard()
---local Pickup = require("PacDaddyGameWrapper/PointsPickup")
---
---for row = 1, board.length do
---    for col = 1, board[1].length do
---        local tileEnum = board[row][col]
---        local tileName = tilenames[tileEnum+1]
---        
---        if tileName == "FLOOR" then
---            local pickup = Pickup:new()
---            local pactorName = "PICKUP".."R:"..row.."C:"..col
---            world:addPactor(pactorName, pickup)
---            world:setPactorSpawn(pactorName, row-1, col-1)
---            world:respawnPactor(pactorName)
---        end
---        
---    end
---end
+populate(poptable)
