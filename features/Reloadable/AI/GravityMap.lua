@@ -175,8 +175,8 @@ function degenerateGravityWeight(gravMap, weight, depth)
     return gravMap.degeneracyFunction(weight, depth)
 end
 function addWeightToMap(gravMap, coor)
-    local row = coor.row
-    local col = coor.col
+    local row = wrapRow(gravMap, coor.row)
+    local col = wrapCol(gravMap, coor.col)
     local weight = coor.weight
     gravMap.map[row][col] = gravMap.map[row][col] + weight
 end
@@ -193,48 +193,32 @@ function printMap(gravMap)
     print()
 end
 
-local function isTraversableForPactor(row, col, pactor)
-    return canBodyAffectTile(pactor, {row = row, col = col})
+local function isTraversableForPactor(gravMap, row, col, pactor)
+    return canBodyAffectTile(pactor, {row = wrapRow(gravMap, row), col = wrapCol(gravMap, col) })
+end
+
+local function getWeight(gravMap, row, col)
+    return gravMap.map[wrapRow(gravMap, row)][wrapCol(gravMap, col)]
+end
+
+local function selectDirectionIfBestMove(gravMap, pactorName, coordinate, direction, bestMove)
+    if isTraversableForPactor(gravMap, coordinate.row, coordinate.col, pactorName) then
+        local weight = getWeight(gravMap, coordinate.row, coordinate.col)
+        if weight > bestMove.weight then
+            bestMove.weight    = weight
+            bestMove.direction = direction
+        end
+    end
 end
 
 local function bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
     local bestMove = { direction = "NONE", weight = -(math.huge) }
 
     if coordinate then
-        local map = gravMap:getGeneratedMap()
-
-        if isTraversableForPactor(wrapRow(gravMap, coordinate.row - 1), coordinate.col, pactorName) then
-            local weight = map[wrapRow(gravMap, coordinate.row - 1)][coordinate.col]
-            if weight > bestMove.weight then
-                bestMove.weight = weight
-                bestMove.direction = "UP"
-            end
-        end
-        
-        if isTraversableForPactor(wrapRow(gravMap, coordinate.row + 1), coordinate.col, pactorName) then
-            local weight = map[wrapRow(gravMap, coordinate.row + 1)][coordinate.col]
-            if weight > bestMove.weight then
-                bestMove.weight = weight
-                bestMove.direction = "DOWN"
-            end
-        end
-        
-        if isTraversableForPactor(coordinate.row, wrapCol(gravMap, coordinate.col + 1), pactorName) then
-            local weight = map[coordinate.row][wrapCol(gravMap, coordinate.col + 1)]
-            if weight > bestMove.weight then
-                bestMove.weight = weight
-                bestMove.direction = "RIGHT"
-            end
-        end
-        
-        if isTraversableForPactor(coordinate.row, wrapCol(gravMap, coordinate.col - 1), pactorName) then
-            local weight = map[coordinate.row][wrapCol(gravMap, coordinate.col - 1)]
-            if weight > bestMove.weight then
-                bestMove.weight = weight
-                bestMove.direction = "LEFT"
-            end
-        end
-    
+        selectDirectionIfBestMove(gravMap, pactorName, { row = coordinate.row - 1, col = coordinate.col }, "UP",    bestMove)
+        selectDirectionIfBestMove(gravMap, pactorName, { row = coordinate.row + 1, col = coordinate.col }, "DOWN",  bestMove)
+        selectDirectionIfBestMove(gravMap, pactorName, { row = coordinate.row, col = coordinate.col - 1 }, "LEFT",  bestMove)
+        selectDirectionIfBestMove(gravMap, pactorName, { row = coordinate.row, col = coordinate.col + 1 }, "RIGHT", bestMove)
     end
     
     return bestMove.direction
