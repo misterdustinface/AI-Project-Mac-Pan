@@ -18,14 +18,14 @@ function getDirectionToMove(start, goal)
 end
 
 local function degenerate(weight, depth)
-    return weight/depth
+    return (5*weight-(depth/7)) / depth
 end
 
 local function playerTickWithGravityMap()
-    gravityMap:setWeights({ ENEMY = -1, PICKUP = 1})
+    gravityMap:setWeights({ ENEMY = -10, PICKUP = 50 })
     gravityMap:setDegeneracyFunction( degenerate )
     gravityMap:generate()
---    gravityMap:print()
+    -- gravityMap:print()
     primaryDirection["PLAYER1"] = gravityMap:bestMove("PLAYER1")
     secondaryDirection["PLAYER1"] = gravityMap:bestSecondaryMove("PLAYER1")
 end
@@ -41,12 +41,21 @@ end
 --  end
 --end
 
+local oppositeDirections = {
+    UP = "DOWN",
+    RIGHT = "LEFT",
+    DOWN = "UP",
+    LEFT = "RIGHT",
+}
+
 local function playerPerform()    
     if player:getValueOf("DIRECTION") == "NONE" then
         player:performAction(primaryDirection["PLAYER1"])
     else
         player:performAction(primaryDirection["PLAYER1"])
-        player:performAction(secondaryDirection["PLAYER1"])
+        if oppositeDirections[primaryDirection["PLAYER1"]] ~= secondaryDirection["PLAYER1"] then
+            player:performAction(secondaryDirection["PLAYER1"])
+        end
     end
 end
 
