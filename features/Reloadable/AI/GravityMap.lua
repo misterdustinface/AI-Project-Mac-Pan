@@ -25,13 +25,6 @@ local getCurrentBody
 local degenerateGravityWeight
 local addWeightToMap
 
-local function getCoordinateOfPactor(name)
-    local world = GAME:getModifiableWorld()
-    local row = world:getRowOf(name) + 1
-    local col = world:getColOf(name) + 1
-    return { row = row, col = col }
-end
-
 local function wrapCol(gravMap, col)  
   if col < 1 then
     col = gravMap.worldBoard[1].length
@@ -52,9 +45,8 @@ end
 
 local function getBodyWeight(gravMap, body)
     local bodyWeight
-    local world = GAME:getModifiableWorld()
-    local pactorExists, pactor = pcall(world.getPactor, world, body)
-    if pactorExists and pactor then
+    local pactor = GAME:getPactor(body)
+    if pactor then
         local typeExists, bodyType = pcall(pactor.getValueOf, pactor, "TYPE")
         if typeExists and bodyType then
             bodyWeight = gravMap.weights[bodyType]
@@ -65,15 +57,14 @@ end
 
 function generate(gravMap)
     resetMap(gravMap)
-    local world = GAME:getModifiableWorld()
-    local pactorNames = world:getPactorNames()
+    local pactorNames = GAME:getPactorNames()
     
     for i = 1, pactorNames.length do
         local body = pactorNames[i]
         local bodyWeight = getBodyWeight(gravMap, body)
         if bodyWeight then
             setCurrentBody(gravMap, body)
-            local coor = getCoordinateOfPactor(body)
+            local coor = GAME:getCoordinateOfPactor(body)
             coor.weight = bodyWeight
             applyGravityFieldToMap(gravMap, coor)
         end
@@ -104,8 +95,7 @@ function applyGravityFieldToMap(gravMap, coor)
 end
 
 function resetMap(gravMap)
-    local world = GAME:getModifiableWorld()
-    local board = world:getTiledBoard()
+    local board = GAME:getTiledBoard()
     local rows = board.length
     local cols = board[1].length
 
@@ -142,9 +132,7 @@ function applyGravity(gravMap, coor)
 end
 
 function canBodyAffectTile(body, coor)
-    local world = GAME:getModifiableWorld()
-    local ok, traversable = pcall(world.isTraversableForPactor, world, coor.row - 1, coor.col - 1, body)
-    return ok and traversable
+    return GAME:isTraversableForPactor(coor.row, coor.col, body)
 end
 
 function setWeights(gravMap, weights)
@@ -253,10 +241,7 @@ local function bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordi
 end
 
 local function bestMove(gravMap, pactorName)
-    local exists, coordinate = pcall(getCoordinateOfPactor, pactorName)
-    if not exists then 
-        coordinate = nil 
-    end
+    local coordinate = GAME:getCoordinateOfPactor(pactorName)
     return bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
 end
 
@@ -268,10 +253,7 @@ local coordinateModifiers = {
 }
 
 local function bestSecondaryMove(gravMap, pactorName)
-    local exists, coordinate = pcall(getCoordinateOfPactor, pactorName)
-    if not exists then 
-        coordinate = nil 
-    end
+    local coordinate = GAME:getCoordinateOfPactor(pactorName)
 
     local direction = bestMove(gravMap, pactorName)
     local coordinateModifier = coordinateModifiers[direction]

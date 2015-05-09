@@ -1,5 +1,4 @@
 local PriorityQueue = require("luasrc/PriorityQueue")
-local world = GAME:getModifiableWorld()
 
 local astar
 local wrapBoundary
@@ -177,8 +176,7 @@ function getTileID(tile)
 end
 
 function isTraversable(tile)
-  -- expecting 0 based indexing
-  return world:isTraversableForPactor(tile.row - 1, tile.col - 1, "PLAYER1")
+  return GAME:isTraversableForPactor(tile.row, tile.col, "PLAYER1")
 end
 
 function setBoard(this, xBoard)

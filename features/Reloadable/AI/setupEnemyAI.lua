@@ -1,5 +1,5 @@
 local GravityMap = require("features/Reloadable/AI/GravityMap")
-local world = GAME:getModifiableWorld()
+local world = GAME:getWorld()
 
 local primaryDirection   = { ["FRIENEMY"] = "NONE", ["FRIENEMY2"] = "NONE" }
 local secondaryDirection = { ["FRIENEMY"] = "NONE", ["FRIENEMY2"] = "NONE"  }

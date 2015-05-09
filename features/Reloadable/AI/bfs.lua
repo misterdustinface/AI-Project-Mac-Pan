@@ -1,5 +1,4 @@
 local Queue = require("luasrc/Queue")
-local world = GAME:getModifiableWorld()
 
 local bfs
 local wrapBoundary
@@ -148,8 +147,7 @@ function getTileID(tile)
 end
 
 function isTraversable(tile)
-  -- expecting 0 based indexing
-  return world:isTraversableForPactor(tile.row - 1, tile.col - 1, "PLAYER1")
+  return GAME:isTraversableForPactor(tile.row, tile.col, "PLAYER1")
 end
 
 function setBoard(this, xBoard)

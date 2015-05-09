@@ -1,7 +1,8 @@
 require("luasrc/VoidFunctionPointer")
 require("luasrc/TickingLoop")
+
 GAME = require("PacDaddyGameWrapper/PacDaddyGameWrapper")
-local mainLoop = GAME:getModifiableGameLoop()
+local mainLoop = GAME:getGameLoop()
 
 local function mainLoopAIPerform()      AI_PERFORM()         end
 local function mainLoopCheckGameRules() GAME_RULES_TICK()    end
