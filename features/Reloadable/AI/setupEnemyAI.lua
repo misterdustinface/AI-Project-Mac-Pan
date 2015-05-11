@@ -31,11 +31,11 @@ local function enemyTick()
 end
 
 local function degenerate(weight, depth)
-    return weight / depth
+    return weight / (depth+1)
 end
 
 local function enemyTickWithGravityMap()
-    gravityMap:setWeights({ PLAYER = 1 })
+    gravityMap:setWeights({ PLAYER = 100000 })
     gravityMap:setDegeneracyFunction( degenerate )
     gravityMap:generate()
     --gravityMap:print()

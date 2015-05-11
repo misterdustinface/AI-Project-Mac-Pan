@@ -19,19 +19,29 @@ function getDirectionToMove(start, goal)
 end
 
 local function degenerate(weight, depth)
-    return (5*weight-(depth/7)) / depth
+    return weight / (depth+1)
+    --return (5*weight-(depth/7)) / (depth+1)
 end
 
 
 local timer = Stopwatch:new()
 --timer:average(100)
 
+local high = 0
+local function getPickupGravity()
+    local numPactors = GAME:getPactorNames().length
+    if numPactors > high then
+        high = numPactors
+    end
+    return 50 * (high / numPactors)
+end
+
 local function playerTickWithGravityMap()
     timer:start()
-    gravityMap:setWeights({ ENEMY = -10, PICKUP = 50 })
+    gravityMap:setWeights({ ENEMY = -10, PICKUP = getPickupGravity() })
     gravityMap:setDegeneracyFunction( degenerate )
     gravityMap:generate()
-    --gravityMap:print()
+    gravityMap:print()
     primaryDirection["PLAYER1"] = gravityMap:bestMove("PLAYER1")
     secondaryDirection["PLAYER1"] = gravityMap:bestSecondaryMove("PLAYER1")
     timer:stop()

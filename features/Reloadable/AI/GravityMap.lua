@@ -196,7 +196,13 @@ function printMap(gravMap)
     for rowNum, rowTable in ipairs(map) do
         local t = {}
         for colNum, value in ipairs(rowTable) do
-            table.insert(t, value)
+            if value > 0 then
+                table.insert(t, string.format("[+%4.1d]", value))
+            elseif value < 0 then
+                table.insert(t, string.format("[-%4.1d]", -value))
+            elseif value == 0 then
+                table.insert(t, " ")
+            end
         end
         print("[R: " .. rowNum .. "]", table.unpack(t))
     end
