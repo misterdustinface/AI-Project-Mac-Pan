@@ -71,12 +71,15 @@ end
 function astar(start)
   visit(start)
   
+  local foundGoal = false
+  
   while not ready:isEmpty() do
     local current = ready:pop()
     visitIfPossible(current, getTileToLeftOf(current))
     visitIfPossible(current, getTileToRightOf(current))
     visitIfPossible(current, getTileAbove(current))
     visitIfPossible(current, getTileBelow(current))
+    foundGoal = (current.row == destination.row and current.col == destination.col)
   end
 end
 

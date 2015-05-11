@@ -44,12 +44,15 @@ end
 function bfs(start)
   visit(start)
   
-  while not ready:isEmpty() do
+  local foundGoal = false
+  
+  while not ready:isEmpty() and not foundGoal do
     local current = ready:dequeue()
     visitIfPossible(current, getTileToLeftOf(current))
     visitIfPossible(current, getTileToRightOf(current))
     visitIfPossible(current, getTileAbove(current))
     visitIfPossible(current, getTileBelow(current))
+    foundGoal = (current.row == destination.row and current.col == destination.col)
   end
 end
 
