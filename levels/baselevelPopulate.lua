@@ -2,6 +2,7 @@ local populationTable = {
     { class = "Player", row = 17, col = 14, name = "PLAYER1",   traversable = { "FLOOR" } },
     { class = "Enemy",  row = 14, col = 13, name = "FRIENEMY",  traversable = { "FLOOR", "ENEMY_SPAWN" }, speed = 0.5 },
     { class = "Enemy",  row = 14, col = 14, name = "FRIENEMY2", traversable = { "FLOOR", "ENEMY_SPAWN" }, speed = 0.3 },
+--    { class = "Pickup", row = 1, col = 1, name = "GOAL", traversable = { "FLOOR" }},
 }
 
 local board = GAME:getTiledBoard()
