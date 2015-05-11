@@ -1,7 +1,7 @@
 local populationTable = {
     { class = "Player", row = 24, col = 15, name = "PLAYER1",   traversable = { "FLOOR" } },
     { class = "Enemy",  row = 15, col = 14, name = "FRIENEMY",  traversable = { "FLOOR", "ENEMY_SPAWN" }, speed = 0.5 },
-    { class = "Enemy",  row = 15, col = 15, name = "FRIENEMY2", traversable = { "FLOOR", "ENEMY_SPAWN" }, speed = 0.3 },
+    --{ class = "Enemy",  row = 15, col = 15, name = "FRIENEMY2", traversable = { "FLOOR", "ENEMY_SPAWN" }, speed = 0.3 },
     { class = "Pickup", row = 2,  col = 2,  name = "GOAL",      traversable = { "FLOOR" }},
     { class = "Pickup", row = 21, col = 8,  name = "GOAL2",     traversable = { "FLOOR" }},
     { class = "Pickup", row = 2,  col = 20, name = "GOAL3",     traversable = { "FLOOR" }},
