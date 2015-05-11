@@ -74,8 +74,8 @@ end
 local function isTraversableForPactor(this, row, col, name)
     -- expecting 0 based indexing
     local world = this:getWorld()
-    local ok, traversable = pcall(world.isTraversableForPactor, world, row - 1, col - 1, name)
-    if ok then return traversable end
+    local ok, traversable = pcall(world.isTraversableForPactor, world, (row - 1), (col - 1), name)
+    return (ok and traversable)
 end
 
 local function getPactorNames(this)

@@ -1,33 +1,23 @@
 local populationTable = {
-    { class = "Player", row = 17, col = 14, name = "PLAYER1",   traversable = { "FLOOR" } },
-    { class = "Enemy",  row = 14, col = 13, name = "FRIENEMY",  traversable = { "FLOOR", "ENEMY_SPAWN" }, speed = 0.5 },
-    { class = "Enemy",  row = 14, col = 14, name = "FRIENEMY2", traversable = { "FLOOR", "ENEMY_SPAWN" }, speed = 0.3 },
---    { class = "Pickup", row = 1, col = 1, name = "GOAL", traversable = { "FLOOR" }},
+    { class = "Player", row = 18, col = 15, name = "PLAYER1",   traversable = { "FLOOR" } },
+    { class = "Enemy",  row = 15, col = 14, name = "FRIENEMY",  traversable = { "FLOOR", "ENEMY_SPAWN" }, speed = 0.5 },
+    { class = "Enemy",  row = 15, col = 15, name = "FRIENEMY2", traversable = { "FLOOR", "ENEMY_SPAWN" }, speed = 0.3 },
+--    { class = "Pickup", row = 2, col = 2, name = "GOAL", traversable = { "FLOOR" }},
 }
 
 local board = GAME:getTiledBoard()
 local tilenames = GAME:getTileNames()
 
---local count = 3
-
 for row = 1, board.length do
     for col = 1, board[1].length do
         local tileEnum = board[row][col]
         local tileName = tilenames[tileEnum+1]
-        
-        
-        
         if tileName == "FLOOR" then
-            table.insert(populationTable, {
-                class = "Pickup", row = (row-1), col = (col-1), name = "PICKUP".."R:"..row.."C:"..col, traversable = { "FLOOR "}
-            })
-            --count = count + 1
+            table.insert(populationTable, 
+              { class = "Pickup", row = row, col = col, name = "PICKUP_".."R:"..row.."C:"..col, traversable = { "FLOOR" } }
+            )
         end
     end
 end
-
---print(count)
-
-
 
 return populationTable

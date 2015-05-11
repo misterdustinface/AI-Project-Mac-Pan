@@ -5,8 +5,8 @@ local public = {}
 
 local function new()
     local pickup = Pactor:new()
-    pickup:setAttribute("TYPE", "PICKUP")
     pickup:setAttribute("IS_PICKUP", true)
+    pickup:setAttribute("TYPE", "PICKUP")
     pickup:setAttribute("VALUE", 1)
     
     --pickup:forgetAction("LEFT")

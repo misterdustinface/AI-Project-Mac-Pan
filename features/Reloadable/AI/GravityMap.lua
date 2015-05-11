@@ -25,7 +25,17 @@ local getCurrentBody
 local degenerateGravityWeight
 local addWeightToMap
 
-local function wrapCol(gravMap, col)  
+local wrapRow
+local wrapCol
+local getBodyWeight
+local isTraversableForPactor
+local getWeight
+local selectDirectionIfBestMove
+local bestDirectionForPactorGivenCoordinate
+local bestMove
+local bestSecondaryMove
+
+function wrapCol(gravMap, col)  
   if col < 1 then
     col = gravMap.worldBoard[1].length
   elseif col > gravMap.worldBoard[1].length then
@@ -34,7 +44,7 @@ local function wrapCol(gravMap, col)
   return col
 end
 
-local function wrapRow(gravMap, row)
+function wrapRow(gravMap, row)
   if row < 1 then
     row = gravMap.worldBoard.length
   elseif row > gravMap.worldBoard.length then
@@ -43,7 +53,7 @@ local function wrapRow(gravMap, row)
   return row
 end
 
-local function getBodyWeight(gravMap, body)
+function getBodyWeight(gravMap, body)
     local bodyWeight
     local pactor = GAME:getPactor(body)
     if pactor then
@@ -193,15 +203,15 @@ function printMap(gravMap)
     print()
 end
 
-local function isTraversableForPactor(gravMap, row, col, pactor)
+function isTraversableForPactor(gravMap, row, col, pactor)
     return canBodyAffectTile(pactor, {row = wrapRow(gravMap, row), col = wrapCol(gravMap, col) })
 end
 
-local function getWeight(gravMap, row, col)
+function getWeight(gravMap, row, col)
     return gravMap.map[wrapRow(gravMap, row)][wrapCol(gravMap, col)]
 end
 
-local function selectDirectionIfBestMove(gravMap, pactorName, coordinate, direction, bestMove)
+function selectDirectionIfBestMove(gravMap, pactorName, coordinate, direction, bestMove)
     if isTraversableForPactor(gravMap, coordinate.row, coordinate.col, pactorName) then
         local weight = getWeight(gravMap, coordinate.row, coordinate.col)
         if weight > bestMove.weight then
@@ -211,7 +221,7 @@ local function selectDirectionIfBestMove(gravMap, pactorName, coordinate, direct
     end
 end
 
-local function bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
+function bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
     local bestMove = { direction = "NONE", weight = -(math.huge) }
 
     if coordinate then
@@ -224,7 +234,7 @@ local function bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordi
     return bestMove.direction
 end
 
-local function bestMove(gravMap, pactorName)
+function bestMove(gravMap, pactorName)
     local coordinate = GAME:getCoordinateOfPactor(pactorName)
     return bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
 end
@@ -236,7 +246,7 @@ local coordinateModifiers = {
     RIGHT = function(gravMap, coordinate) coordinate.col = wrapCol(gravMap, coordinate.col + 1) end,
 }
 
-local function bestSecondaryMove(gravMap, pactorName)
+function bestSecondaryMove(gravMap, pactorName)
     local coordinate = GAME:getCoordinateOfPactor(pactorName)
 
     local direction = bestMove(gravMap, pactorName)
