@@ -8,17 +8,26 @@ local populationTable = {
 local board = GAME:getTiledBoard()
 local tilenames = GAME:getTileNames()
 
+--local count = 3
+
 for row = 1, board.length do
     for col = 1, board[1].length do
         local tileEnum = board[row][col]
         local tileName = tilenames[tileEnum+1]
         
+        
+        
         if tileName == "FLOOR" then
             table.insert(populationTable, {
                 class = "Pickup", row = (row-1), col = (col-1), name = "PICKUP".."R:"..row.."C:"..col, traversable = { "FLOOR "}
             })
+            --count = count + 1
         end
     end
 end
+
+--print(count)
+
+
 
 return populationTable

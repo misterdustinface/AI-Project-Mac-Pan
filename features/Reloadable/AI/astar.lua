@@ -73,7 +73,7 @@ function astar(start)
   
   local foundGoal = false
   
-  while not ready:isEmpty() do
+  while not ready:isEmpty() and not foundGoal do
     local current = ready:pop()
     visitIfPossible(current, getTileToLeftOf(current))
     visitIfPossible(current, getTileToRightOf(current))
