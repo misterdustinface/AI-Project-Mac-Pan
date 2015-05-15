@@ -1,8 +1,8 @@
 local GravityMap = require("features/Reloadable/AI/GravityMap")
 local world = GAME:getWorld()
 
-local primaryDirection   = { ["FRIENEMY"] = "NONE", ["FRIENEMY2"] = "NONE" }
-local secondaryDirection = { ["FRIENEMY"] = "NONE", ["FRIENEMY2"] = "NONE"  }
+local primaryDirection   = { }
+local secondaryDirection = { }
 
 local gravityMap = GravityMap:new()
 
@@ -34,20 +34,34 @@ local function degenerate(weight, depth)
     return weight / (depth+1)
 end
 
-local function enemyTickWithGravityMap()
+local function tickGravityMap()
     gravityMap:setWeights({ PLAYER = 100000 })
     gravityMap:setDegeneracyFunction( degenerate )
     gravityMap:generate()
     --gravityMap:print()
-    primaryDirection["FRIENEMY"] = gravityMap:bestMove("FRIENEMY")
-    secondaryDirection["FRIENEMY"] = gravityMap:bestSecondaryMove("FRIENEMY")
-    
-    primaryDirection["FRIENEMY2"] = gravityMap:bestMove("FRIENEMY2")
-    secondaryDirection["FRIENEMY2"] = gravityMap:bestSecondaryMove("FRIENEMY2")
+end
+
+local function tickPactorAI(myName)
+    primaryDirection[myName] = gravityMap:bestMove(myName)
+    secondaryDirection[myName] = gravityMap:bestSecondaryMove(myName)
+end
+
+local function enemyTickWithGravityMap()
+    tickGravityMap()
+    tickPactorAI("FRIENEMY")
+    tickPactorAI("FRIENEMY2")
 end
 
 local function forcePactorPerform(name)
     local pactor = world:getPactor(name)
+    
+    if not primaryDirection[name] then
+        primaryDirection[name] = "NONE"
+    end
+    if not secondaryDirection[name] then
+        secondaryDirection[name] = "NONE"
+    end
+    
     if pactor then
         if pactor:getValueOf("DIRECTION") == "NONE" then
             pactor:performAction(primaryDirection[name])
