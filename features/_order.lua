@@ -2,5 +2,5 @@ return {
   "Init",
   "Reloadable",
   "Display",
-  "Start"
+  "Start",
 }

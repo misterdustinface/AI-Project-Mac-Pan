@@ -32,6 +32,30 @@ local function decreaseGameSpeed()
     mainLoop:setUpdatesPerSecond(getGameSpeed__ups())
 end
 
+local function addLife()
+    GAME:setValueOf("LIVES", GAME:getValueOf("LIVES") + 1)
+end
+
+local function removeLife()
+    GAME:setValueOf("LIVES", GAME:getValueOf("LIVES") - 1)
+end
+
+local function nextLevel()
+    local score = GAME:getValueOf("SCORE")
+    local lives = GAME:getValueOf("LIVES")
+    local level = GAME:getValueOf("LEVEL") + 1
+    GAME:sendCommand("RELOAD")
+    GAME:setValueOf("SCORE", score)
+    GAME:setValueOf("LIVES", lives)
+    GAME:setValueOf("LEVEL", level)
+end
+
+local function restartGame()
+    if GAME:getValueOf("LOST_GAME") then
+        GAME:sendCommand("RELOAD")
+    end
+end
+
 local function reloadFeatures()
     GAME:sendCommand("PAUSE")
     loadFeatures("features/Reloadable")
@@ -45,10 +69,14 @@ end
 inputProcessor:addCommand("UP",          CONTROLLER1:wrapCommand("UP")) 
 inputProcessor:addCommand("DOWN",        CONTROLLER1:wrapCommand("DOWN"))
 inputProcessor:addCommand("LEFT",        CONTROLLER1:wrapCommand("LEFT")) 
-inputProcessor:addCommand("RIGHT",       CONTROLLER1:wrapCommand("RIGHT"))  
+inputProcessor:addCommand("RIGHT",       CONTROLLER1:wrapCommand("RIGHT")) 
 inputProcessor:addCommand("PAUSE",       VoidFunctionPointer(pause))
 inputProcessor:addCommand("PLAY",        VoidFunctionPointer(play))
 inputProcessor:addCommand("GAMESPEED++", VoidFunctionPointer(increaseGameSpeed)) 
 inputProcessor:addCommand("GAMESPEED--", VoidFunctionPointer(decreaseGameSpeed))
 inputProcessor:addCommand("RELOAD",      VoidFunctionPointer(reloadFeatures))
 inputProcessor:addCommand("QUIT",        VoidFunctionPointer(quitGame))
+inputProcessor:addCommand("LEVEL++",     VoidFunctionPointer(nextLevel))
+inputProcessor:addCommand("LIVES++",     VoidFunctionPointer(addLife))
+inputProcessor:addCommand("LIVES--",     VoidFunctionPointer(removeLife))
+inputProcessor:addCommand("RESTART",     VoidFunctionPointer(restartGame))

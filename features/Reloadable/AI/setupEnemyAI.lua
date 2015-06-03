@@ -4,7 +4,8 @@ local world = GAME:getWorld()
 local primaryDirection   = { }
 local secondaryDirection = { }
 
-local gravityMap = GravityMap:new()
+local frightenedMap = GravityMap:new()
+local calmMap = GravityMap:new()
 
 local function followPlayer1(name)
     local frienemy = world:getPactor(name)
@@ -35,21 +36,36 @@ local function degenerate(weight, depth)
 end
 
 local function tickGravityMap()
-    gravityMap:setWeights({ PLAYER = 100000 })
-    gravityMap:setDegeneracyFunction( degenerate )
-    gravityMap:generate()
-    --gravityMap:print()
+    frightenedMap:setWeights({ PLAYER = -9000 })
+    frightenedMap:setDegeneracyFunction( degenerate )
+    frightenedMap:generate()
+
+    calmMap:setWeights({ PLAYER = 9000 })
+    calmMap:setDegeneracyFunction( degenerate )
+    calmMap:generate()
 end
 
 local function tickPactorAI(myName)
+    local gravityMap
+    local pactor = world:getPactor(myName)
+    
+    if pactor:getValueOf("IS_FRIGHTENED") then
+        gravityMap = frightenedMap
+    else
+        gravityMap = calmMap
+    end
+
     primaryDirection[myName] = gravityMap:bestMove(myName)
     secondaryDirection[myName] = gravityMap:bestSecondaryMove(myName)
 end
 
 local function enemyTickWithGravityMap()
     tickGravityMap()
-    tickPactorAI("FRIENEMY")
-    tickPactorAI("FRIENEMY2")
+    local enemiesInfo = GAME:getInfoForAllPactorsWithAttribute("IS_ENEMY")
+    for i = 1, enemiesInfo.length do
+        local pactor = GAME:getPactor(enemiesInfo[i]:getValueOf("NAME"))
+        tickPactorAI(pactor:getValueOf("NAME"))
+    end
 end
 
 local function forcePactorPerform(name)
@@ -62,20 +78,23 @@ local function forcePactorPerform(name)
         secondaryDirection[name] = "NONE"
     end
     
-    if pactor then
+    if pactor then    
         if pactor:getValueOf("DIRECTION") == "NONE" then
             pactor:performAction(primaryDirection[name])
         else
             pactor:performAction(primaryDirection[name])
-            pactor:performAction(secondaryDirection[name])
+            --pactor:performAction(secondaryDirection[name])
         end  
     end
 end
 
-local function enemyPerform()
-    forcePactorPerform("FRIENEMY")
-    forcePactorPerform("FRIENEMY2")
+local function forceEnemyPerform()
+    local enemiesInfo = GAME:getInfoForAllPactorsWithAttribute("IS_ENEMY")
+    for i = 1, enemiesInfo.length do
+        local pactor = GAME:getPactor(enemiesInfo[i]:getValueOf("NAME"))
+        forcePactorPerform(pactor:getValueOf("NAME"))
+    end
 end
 
 ENEMY_TICK    = enemyTickWithGravityMap
-ENEMY_PERFORM = enemyPerform
+ENEMY_PERFORM = forceEnemyPerform

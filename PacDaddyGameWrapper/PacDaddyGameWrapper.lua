@@ -48,6 +48,11 @@ local function getTileNames(this)
     if ok then return tilenames end
 end
 
+local function getWorldInfoForPactor(this, name)
+    local ok, info = pcall(boardReader.getWorldInfoForPactor, boardReader, name)
+    if ok then return info end
+end
+
 local function getInfoForAllPactorsWithAttribute(this, attribute)
     local ok, info = pcall(boardReader.getInfoForAllPactorsWithAttribute, boardReader, attribute)
     if ok then return info end
@@ -109,6 +114,25 @@ local function removePactor(this, name)
     world:removePactor(name)
 end
 
+local function respawnAllPactors(this)
+    local world = this:getWorld()
+    world:respawnAllPactors()
+end
+
+local function respawnPactor(this, name)
+    local world = this:getWorld()
+    world:respawnPactor(name)
+end
+
+local function getAllPactors(this)
+    local pactors = {}
+    local names = this:getPactorNames()
+    for i = 1, names.length do
+        table.insert(pactors, this:getPactor(names[i]))
+    end
+    return pactors
+end
+
 public.addComponent = addComponentToGame
 public.start = startGame
 public.quit = quitGame
@@ -119,6 +143,7 @@ public.setValueOf = setValueOf
 public.getAttributes = getAttributes
 public.getTiledBoard = getTiledBoard
 public.getTileNames = getTileNames
+public.getWorldInfoForPactor = getWorldInfoForPactor
 public.getInfoForAllPactorsWithAttribute = getInfoForAllPactorsWithAttribute
 public.getNumberOfPactorsWithAttribute = getNumberOfPactorsWithAttribute
 public.getWorld = getModifiableWorld
@@ -130,5 +155,8 @@ public.getPactorNames = getPactorNames
 public.isTraversableForPactor = isTraversableForPactor
 public.getCoordinateOfPactor = getCoordinateOfPactor
 public.removePactor = removePactor
+public.respawnPactor = respawnPactor
+public.respawnAllPactors = respawnAllPactors
+public.getAllPactors = getAllPactors
 
 return public
