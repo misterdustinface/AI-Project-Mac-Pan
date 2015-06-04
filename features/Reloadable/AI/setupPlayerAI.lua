@@ -25,7 +25,7 @@ end
 
 
 local timer = Stopwatch:new()
---timer:average(100)
+--timer:average(2)
 
 local high = 0
 local function getPickupGravity()
@@ -38,10 +38,14 @@ end
 
 local function playerTickWithGravityMap()
     timer:start()
-    gravityMap:setWeights({ ENEMY = -10, PICKUP = getPickupGravity() })
+    if GAME:getValueOf("PLAYER_ENERGIZED") then
+        gravityMap:setWeights({ ENEMY = -1, PELLET = getPickupGravity(), ENERGIZER = -10 })
+    else
+        gravityMap:setWeights({ ENEMY = -10, PELLET = getPickupGravity(), ENERGIZER = 10 })
+    end
     gravityMap:setDegeneracyFunction( degenerate )
     gravityMap:generate()
-    --gravityMap:print()
+    gravityMap:print()
     primaryDirection["PLAYER1"] = gravityMap:bestMove("PLAYER1")
     secondaryDirection["PLAYER1"] = gravityMap:bestSecondaryMove("PLAYER1")
     timer:stop()
@@ -67,7 +71,10 @@ local oppositeDirections = {
     LEFT = "RIGHT",
 }
 
-local function playerPerform()    
+local function playerPerform()
+    primaryDirection["PLAYER1"] = gravityMap:bestMove("PLAYER1")
+    secondaryDirection["PLAYER1"] = gravityMap:bestSecondaryMove("PLAYER1")
+
     if player:getValueOf("DIRECTION") == "NONE" then
         player:performAction(primaryDirection["PLAYER1"])
     else

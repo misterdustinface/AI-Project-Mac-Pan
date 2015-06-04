@@ -16,6 +16,7 @@ end
 
 function ENERGIZE_PLAYER()
     GAME:getValueOf("ENERGIZED_TIMER"):reset()
+    GAME:setValueOf("PLAYER_ENERGIZED", true)
     FRIGHTEN_ALL_ENEMIES()
 end
 
