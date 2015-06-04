@@ -7,6 +7,8 @@ local secondaryDirection = { }
 
 local isFleeing = { }
 local fleeTicks = { }
+-- local fleeCorner = { } --"CORNER1", "CORNER2", "CORNER3", "CORNER4"
+
 
 local frightenedMap = GravityMap:new()
 local calmMap = GravityMap:new()

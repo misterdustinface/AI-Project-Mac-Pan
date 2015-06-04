@@ -50,6 +50,7 @@ local ghostColors = {
 }
 
 local pactorColorMap = {
+    ["PACTOR"]        = function(pactor) return Color.RED end,
     ["PLAYER"]        = function(pactor) return Color.YELLOW end,
     ["ENEMY"]         = function(pactor)
                             local color
@@ -92,9 +93,14 @@ local drawOrder = {
   "ENERGIZER",
   "ENEMY",
   "PLAYER",
+--  "PACTOR",
 }
 
 local drawermap = {
+    ["PACTOR"] = function(g, pactor, info)
+        local row, col = info:getValueOf("ROW"), info:getValueOf("COL")
+        g:fillRect((col) * TILEWIDTH, (row) * TILEHEIGHT, TILEWIDTH, TILEHEIGHT)
+    end,
     ["PLAYER"]  = function(g, pactor, info) 
         local row, col = info:getValueOf("ROW"), info:getValueOf("COL")
         local direction = info:getValueOf("DIRECTION")

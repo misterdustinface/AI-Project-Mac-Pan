@@ -9,6 +9,10 @@ local populationTable = {
     { class = "Energizer", row = 24, col = 2,  name = "ENERGIZER2", traversable = { "FLOOR" } },
     { class = "Energizer", row = 4,  col = 27, name = "ENERGIZER3", traversable = { "FLOOR" } },
     { class = "Energizer", row = 4,  col = 2,  name = "ENERGIZER4", traversable = { "FLOOR" } },
+    { class = "Pactor",    row = 2,  col = 2,  name = "CORNER1",    traversable = { "FLOOR", "ENEMY_SPAWN" } },
+    { class = "Pactor",    row = 30, col = 2,  name = "CORNER2",    traversable = { "FLOOR", "ENEMY_SPAWN" } },
+    { class = "Pactor",    row = 2,  col = 27, name = "CORNER3",    traversable = { "FLOOR", "ENEMY_SPAWN" } },
+    { class = "Pactor",    row = 30, col = 27, name = "CORNER4",    traversable = { "FLOOR", "ENEMY_SPAWN" } },
 }
 
 local board = GAME:getTiledBoard()

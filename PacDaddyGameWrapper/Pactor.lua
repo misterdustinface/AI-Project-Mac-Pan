@@ -1,8 +1,9 @@
 local public = {}
 
 local function new()
-    local pactor = luajava.newInstance("Engine.Pactor")
-    return pactor
+    local self = luajava.newInstance("Engine.Pactor")
+    self:setAttribute("TYPE", "PACTOR")
+    return self
 end
 
 public.new = new
