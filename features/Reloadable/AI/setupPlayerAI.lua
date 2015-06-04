@@ -72,9 +72,6 @@ local oppositeDirections = {
 }
 
 local function playerPerform()
-    primaryDirection["PLAYER1"] = gravityMap:bestMove("PLAYER1")
-    secondaryDirection["PLAYER1"] = gravityMap:bestSecondaryMove("PLAYER1")
-
     if player:getValueOf("DIRECTION") == "NONE" then
         player:performAction(primaryDirection["PLAYER1"])
     else

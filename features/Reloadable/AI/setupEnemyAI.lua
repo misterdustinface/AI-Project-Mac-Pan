@@ -1,8 +1,12 @@
 local GravityMap = require("features/Reloadable/AI/GravityMap")
 local world = GAME:getWorld()
+math.randomseed(os.time())
 
 local primaryDirection   = { }
 local secondaryDirection = { }
+
+local isFleeing = { }
+local fleeTicks = { }
 
 local frightenedMap = GravityMap:new()
 local calmMap = GravityMap:new()
@@ -24,11 +28,25 @@ end
 local function tickPactorAI(myName)
     local gravityMap
     local pactor = world:getPactor(myName)
+
+    if not isFleeing[myName] then
+        isFleeing[myName] = (math.random(20) == 1)
+        if isFleeing[myName] then
+            fleeTicks[myName] = math.random(45)
+        end
+    end
     
-    if pactor:getValueOf("IS_FRIGHTENED") then
+    if pactor:getValueOf("IS_FRIGHTENED") or isFleeing[myName] then
         gravityMap = frightenedMap
     else
         gravityMap = calmMap
+    end
+
+    if isFleeing[myName] then
+        fleeTicks[myName] = fleeTicks[myName] - 1
+        if fleeTicks[myName] <= 0 then
+            isFleeing[myName] = false
+        end
     end
 
     primaryDirection[myName] = gravityMap:bestMove(myName)
