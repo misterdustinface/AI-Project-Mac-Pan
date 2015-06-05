@@ -81,7 +81,7 @@ end
 
 local function popNodeOfHighestDegree() 
     local node
-    for i = 4, 1, -1 do
+    for i = 4, 2, -1 do
         if hasNodeOfDegree(i) then
             node = popNodeOfDegree(i)
         end
@@ -91,7 +91,7 @@ end
 
 local function popNodeOfLowestDegree()
     local node
-    for i = 1, 4, 1 do
+    for i = 1, 2, 1 do
         if hasNodeOfDegree(i) then
             node = popNodeOfDegree(i)
         end
@@ -168,7 +168,7 @@ end
 local function randomFillNodeFrom(node)
     local degree = getTileDegree(node.row, node.col)
     
-    if degree > 1 then
+    if degree >= 2 then
         local possibleDirectionSet = getPossibleFillDirectionSet(node)
         if #possibleDirectionSet > 0 then
             local randomDirection = possibleDirectionSet[math.random(#possibleDirectionSet)]
@@ -181,7 +181,7 @@ end
 local function randomTunnelNodeFrom(node)
     local degree = getTileDegree(node.row, node.col)
     
-    if degree < 4 then
+    if degree <= 3 then
         local possibleDirectionSet = getPossibleTunnelDirectionSet(node)
         if #possibleDirectionSet > 0 then
             local randomDirection = possibleDirectionSet[math.random(#possibleDirectionSet)]
@@ -215,9 +215,23 @@ local function shuffleWalls()
         local filler = getPerturbedDirection(highDegreeNode, randomFillerDirection)      
         local tunneler = getPerturbedDirection(lowDegreeNode, randomTunnelDirection)  
         
-        while getTileName(filler.row, filler.col) == "FLOOR" and getTileName(tunneler.row, tunneler.col) == "WALL" do
+        local nextFiller = getPerturbedDirection(filler, randomFillerDirection)
+        
+        while getTileName(filler.row, filler.col) == "FLOOR" and getTileName(nextFiller.row, nextFiller.col) == "FLOOR" do
+        
+            if getTileName(tunneler.row, tunneler.col) ~= "WALL" then
+                repeat
+                    insertNode(lowDegreeNode.row,  lowDegreeNode.col)
+                    lowDegreeNode = popNodeOfLowestDegree()
+                    possibleTunnelerDirectionSet = getPossibleTunnelDirectionSet(lowDegreeNode)
+                until #possibleTunnelerDirectionSet > 0
+                randomTunnelDirection = possibleTunnelerDirectionSet[math.random(#possibleTunnelerDirectionSet)]
+                tunneler = getPerturbedDirection(lowDegreeNode, randomTunnelDirection)
+            end
+        
             swap(filler, tunneler)
             filler = getPerturbedDirection(filler, randomFillerDirection)
+            nextFiller = getPerturbedDirection(filler, randomFillerDirection)
             tunneler = getPerturbedDirection(tunneler, randomTunnelDirection)
     --        filler   = randomFillNodeFrom(filler)
     --        tunneler = randomTunnelNodeFrom(tunneler)
