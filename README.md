@@ -2,8 +2,33 @@
 
 AI project for ICS 175.  Create an AI that plays a non-deterministic version of PacMan
 
+DEPENDENCIES: 
+ - Java Runtime Environment 1.7 or higher
+ - A fast machine.  No machine is fast enough.
+
 TO RUN:
-Go to the libs directory.  Find the file named PacDaddyEngine.jar.  Run it as an application.
+ - Windows / Apple: Run "PacDaddyEngine.jar"
+ - Linux: On some machines you may have to execute the "run.sh" script from the command line. 
+
+BUGS:
+ - Wall shuffling does not properly shuffle pellets after (reloading / level up / death).
+
+OTHER ISSUES:
+ - Pacman AI is currently much too slow to perform adequately at normal game speed.  Recommended to lower the game update speed.
+
+CONTROLS:
+
+| KEYS          | DESCRIPTION                                                    |
+| ------------- | -------------------------------------------------------------- |
+| ARROW KEYS    | Move Pacman.  Pacman's AI typically takes supervisory control. |
+| ENTER         | Restart game when lives reach 0                                |
+| R             | Reload the game features                                       |
+| Q / ESC       | Quit the game                                                  |
+| P             | Pause the game update loop.                                    |
+| F1 / F2       | Change number of lives                                         |
+| F3 / F4       | Change the game speed, in updates per second (UPS)             |
+| F5 / F6       | Change the render speed, in frames per second (FPS)            |
+| F9            | Go to the next level                                           |
 
 #### Reference
 - [PacDaddy Engine](https://github.com/misterdustinface/PacDaddy)
