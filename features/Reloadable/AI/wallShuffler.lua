@@ -42,19 +42,27 @@ local function popNodeOfHighestDegree()
     end
 end
 
-local function wrapCol(board, col)  
+local function popNodeOfLowestDegree()
+    for i = 1, 4, 1 do
+        if hasNodeOfDegree(i) then
+            return popNodeOfDegree(i)
+        end
+    end
+end
+
+local function wrapCol(col)  
   if col < 1 then
-    col = board[1].length
-  elseif col > board[1].length then
+    col = world:getCols()
+  elseif col > world:getCols() then
     col = 1
   end
   return col
 end
 
-local function wrapRow(board, row)
+local function wrapRow(row)
   if row < 1 then
-    row = board.length
-  elseif row > board.length then
+    row = world:getRows()
+  elseif row > world:getRows() then
     row = 1
   end
   return row
@@ -62,8 +70,8 @@ end
 
 local function getTileName(row, col)
     local board = GAME:getTiledBoard()
-    row = wrapRow(board, row)
-    col = wrapCol(board, col)
+    row = wrapRow(row)
+    col = wrapCol(col)
     local tileNames = GAME:getTileNames()
     local tileEnum = board[row][col]
     local tileName = tileNames[tileEnum+1]
@@ -107,33 +115,115 @@ local function setup()
     end
 end
 
-local function randomFillFrom(node)
-    local possibleDirectionSet = {}
-    local degree = getTileDegree(node.row, node.col)
-    
+local function getPossibleFillDirectionSet(node)
+    local possibleFillDirectionSet = {}
+
     if getTileName(node.row - 1, node.col) == "FLOOR" then
-        table.insert(possibleDirectionSet, "UP")
+        table.insert(possibleFillDirectionSet, "UP")
     end
     if getTileName(node.row + 1, node.col) == "FLOOR" then
-        table.insert(possibleDirectionSet, "DOWN")
+        table.insert(possibleFillDirectionSet, "DOWN")
     end
     if getTileName(node.row, node.col - 1) == "FLOOR" then
-        table.insert(possibleDirectionSet, "LEFT")
+        table.insert(possibleFillDirectionSet, "LEFT")
     end
     if getTileName(node.row, node.col + 1) == "FLOOR" then
-        table.insert(possibleDirectionSet, "RIGHT")
+        table.insert(possibleFillDirectionSet, "RIGHT")
     end
     
-    local randomDirection = possibleDirectionSet[math.random(#possibleDirectionSet)]
+    return possibleFillDirectionSet
+end
+
+local function getPossibleTunnelDirectionSet(node)
+    local possibleTunnelDirectionSet = {}
+
+    if getTileName(node.row - 1, node.col) == "WALL" then
+        table.insert(possibleTunnelDirectionSet, "UP")
+    end
+    if getTileName(node.row + 1, node.col) == "WALL" then
+        table.insert(possibleTunnelDirectionSet, "DOWN")
+    end
+    if getTileName(node.row, node.col - 1) == "WALL" then
+        table.insert(possibleTunnelDirectionSet, "LEFT")
+    end
+    if getTileName(node.row, node.col + 1) == "WALL" then
+        table.insert(possibleTunnelDirectionSet, "RIGHT")
+    end
     
+    return possibleTunnelDirectionSet
+end
+
+local function getPerturbedDirection(node, direction)
+    local board = GAME:getTiledBoard()
+    local pd = { row = node.row, col = node.col }
+
+    if direction == "UP" then
+        pd.row = wrapRow(pd.row - 1)
+    end
+    if direction == "DOWN" then
+        pd.row = wrapRow(pd.row + 1)
+    end
+    if direction == "LEFT" then
+        pd.col = wrapCol(pd.col - 1)
+    end
+    if direction == "RIGHT" then
+        pd.col = wrapCol(pd.col + 1)
+    end
+    
+    return pd
+end
+
+local function randomFillNodeFrom(node)
+    local degree = getTileDegree(node.row, node.col)
+    
+    if degree > 1 then
+        local possibleDirectionSet = getPossibleFillDirectionSet(node)
+        if #possibleDirectionSet > 0 then
+            local randomDirection = possibleDirectionSet[math.random(#possibleDirectionSet)]
+            local nextNode = getPerturbedDirection(node, randomDirection)        
+            return nextNode
+        end
+    end
+end
+
+local function randomTunnelNodeFrom(node)
+    local degree = getTileDegree(node.row, node.col)
+    
+    if degree < 4 then
+        local possibleDirectionSet = getPossibleTunnelDirectionSet(node)
+        if #possibleDirectionSet > 0 then
+            local randomDirection = possibleDirectionSet[math.random(#possibleDirectionSet)]
+            local nextNode = getPerturbedDirection(node, randomDirection)        
+            return nextNode
+        end
+    end
+end
+
+local function swap(A, B)
+    if A and B then
+        world:swap(A.row - 1, A.col - 1, B.row - 1, B.col - 1)
+    end
 end
 
 local function shuffleWalls()
     local highDegreeNode = popNodeOfHighestDegree()
-    local degree = getTileDegree(highDegreeNode.row, highDegreeNode.col)
-    insertNode(degree, highDegreeNode.row, highDegreeNode.col)
+    local lowDegreeNode  = popNodeOfLowestDegree()
+    local filler   = randomFillNodeFrom(highDegreeNode)
+    local tunneler = randomTunnelNodeFrom(lowDegreeNode)
+    
+    for i = 1, math.random(8) do
+        if filler and tunneler then
+            setDegreeOfNode(filler.row, filler.col, getTileDegree(tunneler.row, tunneler.col))
+            setDegreeOfNode(tunneler.row, tunneler.col, getTileDegree(filler.row, filler.col))
+            swap(filler, tunneler)
+            filler   = randomFillNodeFrom(filler)
+            tunneler = randomTunnelNodeFrom(tunneler)
+        end
+    end
+    
+    insertNode(getTileDegree(highDegreeNode.row, highDegreeNode.col), highDegreeNode.row, highDegreeNode.col)
+    insertNode(getTileDegree(lowDegreeNode.row, lowDegreeNode.col), lowDegreeNode.row, lowDegreeNode.col)
 
-    world:swap(2, math.random(world:getCols()) - 1, 4, math.random(world:getCols()) - 1)
 end
 
 setup()
