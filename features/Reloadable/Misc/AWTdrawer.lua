@@ -15,21 +15,11 @@ local borderWidth  = 40
 local wallcolors = {
     [0] = Color.BLACK,
     Color.BLUE,
-    Color.GREEN,
-    Color.YELLOW,
-    Color.ORANGE,
-    Color.RED,
-    Color.MAGENTA,
     Color.GRAY,
 }
 
 local wallcomplimentcolors = {
     [0] = Color.GRAY,
-    Color.BLACK,
-    Color.BLACK,
-    Color.BLACK,
-    Color.BLACK,
-    Color.BLACK,
     Color.BLACK,
     Color.BLACK,
 }

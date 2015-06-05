@@ -27,14 +27,14 @@ local function tickGravityMap()
     calmMap:generate()
 end
 
-local function tickPactorAI(myName)
+local function applyGravmapTo(myName)
     local gravityMap
     local pactor = world:getPactor(myName)
 
     if not isFleeing[myName] then
-        isFleeing[myName] = (math.random(20) == 1)
+        isFleeing[myName] = (math.random(45) == 1)
         if isFleeing[myName] then
-            fleeTicks[myName] = math.random(45)
+            fleeTicks[myName] = 3 + math.random(27)
         end
     end
     
@@ -60,7 +60,7 @@ local function enemyTickWithGravityMap()
     local enemiesInfo = GAME:getInfoForAllPactorsWithAttribute("IS_ENEMY")
     for i = 1, enemiesInfo.length do
         local pactor = GAME:getPactor(enemiesInfo[i]:getValueOf("NAME"))
-        tickPactorAI(pactor:getValueOf("NAME"))
+        applyGravmapTo(pactor:getValueOf("NAME"))
     end
 end
 

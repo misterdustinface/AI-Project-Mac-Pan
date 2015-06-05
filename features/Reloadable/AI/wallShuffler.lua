@@ -1,54 +1,5 @@
-local Queue = require("luasrc/Queue")
 local world = GAME:getWorld()
 math.randomseed(os.time())
-
-local getNodeOfDegreeTable = {
-    [0] = Queue:new(),
-    [1] = Queue:new(),
-    [2] = Queue:new(),
-    [3] = Queue:new(),
-    [4] = Queue:new(),
-}
-
-local getDegreeOfNodeTable = {}
-
-local function getDegreeOfNode(row, col)
-    return getDegreeOfNodeTable[row .. ", " .. col]
-end
-
-local function setDegreeOfNode(row, col, degree)
-    getDegreeOfNodeTable[row .. ", " .. col] = degree
-end
-
-local function insertNode(degree, row, col)
-    getNodeOfDegreeTable[degree]:enqueue({ ["row"] = row, ["col"] = col })
-    setDegreeOfNode(row, col, degree)
-end
-
-local function popNodeOfDegree(degree)
-    local node = getNodeOfDegreeTable[degree]:dequeue()
-    return node
-end
-
-local function hasNodeOfDegree(degree)
-    return not getNodeOfDegreeTable[degree]:isEmpty()
-end
-
-local function popNodeOfHighestDegree() 
-    for i = 4, 1, -1 do
-        if hasNodeOfDegree(i) then
-            return popNodeOfDegree(i)
-        end
-    end
-end
-
-local function popNodeOfLowestDegree()
-    for i = 1, 4, 1 do
-        if hasNodeOfDegree(i) then
-            return popNodeOfDegree(i)
-        end
-    end
-end
 
 local function wrapCol(col)  
   if col < 1 then
@@ -78,15 +29,6 @@ local function getTileName(row, col)
     return tileName
 end
 
-
---local function generateCoordinate()
---    local ROWS = world:getRows()
---    local COLS = world:getCols()
---    local row = math.random(ROWS) - 1
---    local col = math.random(COLS) - 1
---    return row, col
---end
-
 local function getTileDegree(row, col)
     local degree = 0
     
@@ -106,11 +48,61 @@ local function getTileDegree(row, col)
     return degree
 end
 
+local getNodeOfDegreeTable = {
+    [0] = {},
+    [1] = {},
+    [2] = {},
+    [3] = {},
+    [4] = {},
+}
+
+local function getDegreeOfNode(row, col)
+    return getTileDegree(row, col)
+end
+
+local function insertNode(row, col)
+    local degree = getTileDegree(row, col)
+    table.insert(getNodeOfDegreeTable[degree], { ["row"] = row, ["col"] = col })
+end
+
+local function hasNodeOfDegree(degree)
+    return #getNodeOfDegreeTable[degree] > 0
+end
+
+local function popNodeOfDegree(degree)
+    local node = table.remove(getNodeOfDegreeTable[degree], math.random(1, #getNodeOfDegreeTable[degree]))
+    while getDegreeOfNode(node.row, node.col) ~= degree and hasNodeOfDegree(degree) do
+        insertNode(node.row, node.col)
+        node = table.remove(getNodeOfDegreeTable[degree], math.random(1, #getNodeOfDegreeTable[degree]))
+    end
+    
+    if getDegreeOfNode(node.row, node.col) == degree then return node end
+end
+
+local function popNodeOfHighestDegree() 
+    local node
+    for i = 4, 1, -1 do
+        if hasNodeOfDegree(i) then
+            node = popNodeOfDegree(i)
+        end
+        if node then return node end
+    end
+end
+
+local function popNodeOfLowestDegree()
+    local node
+    for i = 1, 4, 1 do
+        if hasNodeOfDegree(i) then
+            node = popNodeOfDegree(i)
+        end
+        if node then return node end
+    end
+end
+
 local function setup()
     for row = 1, world:getRows() do
         for col = 1, world:getCols() do
-            local degree = getTileDegree(row, col)
-            insertNode(degree, row, col)
+            insertNode(row, col)
         end
     end
 end
@@ -208,21 +200,33 @@ end
 local function shuffleWalls()
     local highDegreeNode = popNodeOfHighestDegree()
     local lowDegreeNode  = popNodeOfLowestDegree()
-    local filler   = randomFillNodeFrom(highDegreeNode)
-    local tunneler = randomTunnelNodeFrom(lowDegreeNode)
     
-    for i = 1, math.random(8) do
-        if filler and tunneler then
-            setDegreeOfNode(filler.row, filler.col, getTileDegree(tunneler.row, tunneler.col))
-            setDegreeOfNode(tunneler.row, tunneler.col, getTileDegree(filler.row, filler.col))
+--    local filler   = randomFillNodeFrom(highDegreeNode)
+--    local tunneler = randomTunnelNodeFrom(lowDegreeNode)
+    
+    local possibleFillerDirectionSet = getPossibleFillDirectionSet(highDegreeNode)
+    local possibleTunnelerDirectionSet = getPossibleTunnelDirectionSet(lowDegreeNode)
+    
+    if #possibleFillerDirectionSet > 0 and #possibleTunnelerDirectionSet > 0 then
+    
+        local randomFillerDirection = possibleFillerDirectionSet[math.random(#possibleFillerDirectionSet)]
+        local randomTunnelDirection = possibleTunnelerDirectionSet[math.random(#possibleTunnelerDirectionSet)]
+    
+        local filler = getPerturbedDirection(highDegreeNode, randomFillerDirection)      
+        local tunneler = getPerturbedDirection(lowDegreeNode, randomTunnelDirection)  
+        
+        while getTileName(filler.row, filler.col) == "FLOOR" and getTileName(tunneler.row, tunneler.col) == "WALL" do
             swap(filler, tunneler)
-            filler   = randomFillNodeFrom(filler)
-            tunneler = randomTunnelNodeFrom(tunneler)
+            filler = getPerturbedDirection(filler, randomFillerDirection)
+            tunneler = getPerturbedDirection(tunneler, randomTunnelDirection)
+    --        filler   = randomFillNodeFrom(filler)
+    --        tunneler = randomTunnelNodeFrom(tunneler)
         end
+        
     end
     
-    insertNode(getTileDegree(highDegreeNode.row, highDegreeNode.col), highDegreeNode.row, highDegreeNode.col)
-    insertNode(getTileDegree(lowDegreeNode.row, lowDegreeNode.col), lowDegreeNode.row, lowDegreeNode.col)
+    insertNode(highDegreeNode.row, highDegreeNode.col)
+    insertNode(lowDegreeNode.row,  lowDegreeNode.col)
 
 end
 
