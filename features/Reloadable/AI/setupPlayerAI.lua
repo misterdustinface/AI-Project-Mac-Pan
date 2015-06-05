@@ -45,7 +45,7 @@ local function playerTickWithGravityMap()
     end
     gravityMap:setDegeneracyFunction( degenerate )
     gravityMap:generate()
-    gravityMap:print()
+--    gravityMap:print()
     primaryDirection["PLAYER1"] = gravityMap:bestMove("PLAYER1")
     secondaryDirection["PLAYER1"] = gravityMap:bestSecondaryMove("PLAYER1")
     timer:stop()

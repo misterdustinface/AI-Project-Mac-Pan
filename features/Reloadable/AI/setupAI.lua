@@ -17,3 +17,4 @@ AI_PERFORM     = performAllAIMoves
 
 AI_TICK_LOOP:setUpdatesPerSecond(15)
 PLAYER_AI_TICK_LOOP:setUpdatesPerSecond(15)
+WALL_SHUFFLE_TICK_LOOP:setUpdatesPerSecond(1)

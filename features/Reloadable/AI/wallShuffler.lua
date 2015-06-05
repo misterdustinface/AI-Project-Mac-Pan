@@ -11,7 +11,7 @@ local function generateCoordinate()
 end
 
 local function shuffleWalls()
-
+    world:swap(2,2, 4, 1 + math.random(16))
 end
 
 WALL_SHUFFLE_TICK = shuffleWalls
