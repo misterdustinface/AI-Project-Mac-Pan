@@ -43,7 +43,7 @@ local function new()
             else
                 GAME:sendCommand("PAUSE")
                 GAME:sendCommand("LIVES--")
-                GAME:respawnAllPactors()
+                GAME:sendCommand("RESPAWN_ALL_PACTORS_AND_TILES")
                 GAME:sendCommand("PLAY")
             end
         

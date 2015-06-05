@@ -62,6 +62,13 @@ local function reloadFeatures()
     GAME:sendCommand("PLAY")
 end
 
+local function respawnAllPactorsAndTiles()    
+    GAME:sendCommand("PAUSE")
+    loadFeatures("features/Reloadable/Level/loadLevel.lua")
+    GAME:respawnAllPactors()
+    GAME:sendCommand("PLAY")
+end
+
 local function quitGame()
     GAME:quit()
 end
@@ -80,3 +87,4 @@ inputProcessor:addCommand("LEVEL++",     VoidFunctionPointer(nextLevel))
 inputProcessor:addCommand("LIVES++",     VoidFunctionPointer(addLife))
 inputProcessor:addCommand("LIVES--",     VoidFunctionPointer(removeLife))
 inputProcessor:addCommand("RESTART",     VoidFunctionPointer(restartGame))
+inputProcessor:addCommand("RESPAWN_ALL_PACTORS_AND_TILES", VoidFunctionPointer(respawnAllPactorsAndTiles))
