@@ -77,9 +77,7 @@ local function playerPerform()
         player:performAction(primaryDirection["PLAYER1"])
     else
         player:performAction(primaryDirection["PLAYER1"])
-        if oppositeDirections[primaryDirection["PLAYER1"]] ~= secondaryDirection["PLAYER1"] then
-            player:performAction(secondaryDirection["PLAYER1"])
-        end
+        player:performAction(secondaryDirection["PLAYER1"])
     end
 end
 
