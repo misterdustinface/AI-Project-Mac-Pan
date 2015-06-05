@@ -8,6 +8,7 @@ local function new()
     local self = Pactor:new()
     self:setAttribute("IS_PLAYER", true)
     self:setAttribute("TYPE", "PLAYER")
+    self:setAttribute("DIRECTION", "NONE")
     
     local function onPactorCollision(otherPactorAttributes)
 

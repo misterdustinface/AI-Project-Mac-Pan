@@ -23,12 +23,14 @@ local function play()
 end
 
 local function increaseGameSpeed()
-    shiftGameSpeed__ups(10)
+    shiftGameSpeed__ups(1)
     mainLoop:setUpdatesPerSecond(getGameSpeed__ups())
 end
 
 local function decreaseGameSpeed()
-    shiftGameSpeed__ups(-10)
+    if getGameSpeed__ups() > 0 then
+        shiftGameSpeed__ups(-1)
+    end
     mainLoop:setUpdatesPerSecond(getGameSpeed__ups())
 end
 
@@ -73,6 +75,18 @@ local function quitGame()
     GAME:quit()
 end
 
+local function increaseFPS()
+    local fps = DISPLAY:getFPS()
+    DISPLAY:setFPS(fps + 1)
+end
+
+local function decreaseFPS()
+    local fps = DISPLAY:getFPS()
+    if fps > 1 then
+        DISPLAY:setFPS(fps - 1)
+    end
+end
+
 inputProcessor:addCommand("UP",          CONTROLLER1:wrapCommand("UP")) 
 inputProcessor:addCommand("DOWN",        CONTROLLER1:wrapCommand("DOWN"))
 inputProcessor:addCommand("LEFT",        CONTROLLER1:wrapCommand("LEFT")) 
@@ -88,3 +102,5 @@ inputProcessor:addCommand("LIVES++",     VoidFunctionPointer(addLife))
 inputProcessor:addCommand("LIVES--",     VoidFunctionPointer(removeLife))
 inputProcessor:addCommand("RESTART",     VoidFunctionPointer(restartGame))
 inputProcessor:addCommand("RESPAWN_ALL_PACTORS_AND_TILES", VoidFunctionPointer(respawnAllPactorsAndTiles))
+inputProcessor:addCommand("FPS++",       VoidFunctionPointer(increaseFPS))
+inputProcessor:addCommand("FPS--",       VoidFunctionPointer(decreaseFPS))

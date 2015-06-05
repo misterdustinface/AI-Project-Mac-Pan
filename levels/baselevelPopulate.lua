@@ -26,11 +26,19 @@ end
 
 for row = 1, board.length do
     for col = 1, board[1].length do
-        local tileName = getTileName(row, col)
-        if tileName == "FLOOR" then
-            table.insert(populationTable, {
-                class = "Pellet", row = row, col = col, name = "PELLET".."R:"..row.."C:"..col, traversable = { "FLOOR" }
-            })
+        if (row >= 10 and row <= 20) then
+            if (col == 7 or col == 22) then
+                table.insert(populationTable, {
+                    class = "Pellet", row = row, col = col, name = "PELLET".."R:"..row.."C:"..col, traversable = { "FLOOR" }
+                })
+            end
+        else
+            local tileName = getTileName(row, col)
+            if tileName == "FLOOR" then
+                table.insert(populationTable, {
+                    class = "Pellet", row = row, col = col, name = "PELLET".."R:"..row.."C:"..col, traversable = { "FLOOR" }
+                })
+            end
         end
     end
 end
