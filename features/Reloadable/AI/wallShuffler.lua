@@ -245,7 +245,7 @@ local function shuffleWalls()
 end
 
 local function wallShuffleTick()
-    if GAME:getValueOf("SHOULD_SHUFFLE_WALLS") then
+    if GAME:getValueOf("SHOULD_SHUFFLE_WALLS") and not GAME:getValueOf("IS_PAUSED") then
         shuffleWalls()
     end
 end
