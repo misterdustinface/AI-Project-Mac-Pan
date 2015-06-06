@@ -5,4 +5,6 @@ local populationTable = {
     { class = "Pellet",    row = 2,  col = 2,  name = "PELLET",    traversable = { "FLOOR" } },
 }
 
+GAME:setValueOf("SHOULD_SHUFFLE_WALLS", false)
+
 return populationTable

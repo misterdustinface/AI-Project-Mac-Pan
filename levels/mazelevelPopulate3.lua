@@ -11,4 +11,6 @@ local populationTable = {
     { class = "Pellet",    row = 2,  col = 20,  name = "PELLET6",   traversable = { "FLOOR" } },
 }
 
+GAME:setValueOf("SHOULD_SHUFFLE_WALLS", true)
+
 return populationTable
