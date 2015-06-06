@@ -14,16 +14,20 @@ local pressProcessDispatch = {
     [KEYS.ESC]   = function() GAME:sendCommand("QUIT")   end,
 
     [KEYS.P]     = function() GAME:sendCommand(tif(GAME:getValueOf("IS_PAUSED"), "PLAY", "PAUSE")) end,
+    
+    [KEYS.ONE]   = function() GAME:sendCommand("LIVES--") end,
+    [KEYS.TWO]   = function() GAME:sendCommand("LIVES++") end,
+    
+    [KEYS.THREE] = function() GAME:sendCommand("GAMESPEED--") end,
+    [KEYS.FOUR]  = function() GAME:sendCommand("GAMESPEED++") end,
 
-    [KEYS.F1]    = function() GAME:sendCommand("LIVES--") end,
-    [KEYS.F2]    = function() GAME:sendCommand("LIVES++") end,
-    [KEYS.F3]    = function() GAME:sendCommand("GAMESPEED--") end,
-    [KEYS.F4]    = function() GAME:sendCommand("GAMESPEED++") end,
+    [KEYS.FIVE]  = function() GAME:sendCommand("FPS--") end,
+    [KEYS.SIX]   = function() GAME:sendCommand("FPS++") end,
 
-    [KEYS.F5]    = function() GAME:sendCommand("FPS--") end,
-    [KEYS.F6]    = function() GAME:sendCommand("FPS++") end,
-
-    [KEYS.F9]    = function() GAME:sendCommand("LEVEL++") end,
+    [KEYS.SEVEN] = function() GAME:sendCommand("LEVEL--") end,
+    [KEYS.EIGHT] = function() GAME:sendCommand("LEVEL++") end,
+    
+    [KEYS.NINE]  = function() GAME:sendCommand("TOGGLE_WALL_SHUFFLE") end, 
 }
 
 PRESS_PROCESS_DISPATCH = pressProcessDispatch

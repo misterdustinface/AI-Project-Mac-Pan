@@ -42,10 +42,22 @@ local function removeLife()
     GAME:setValueOf("LIVES", GAME:getValueOf("LIVES") - 1)
 end
 
+local function previousLevel()
+    local score = GAME:getValueOf("SCORE")
+    local lives = GAME:getValueOf("LIVES")
+    local level = GAME:getValueOf("LEVEL") - 1
+    GAME:setValueOf("LEVEL", level)
+    GAME:sendCommand("RELOAD")
+    GAME:setValueOf("SCORE", score)
+    GAME:setValueOf("LIVES", lives)
+    GAME:setValueOf("LEVEL", level)
+end
+
 local function nextLevel()
     local score = GAME:getValueOf("SCORE")
     local lives = GAME:getValueOf("LIVES")
     local level = GAME:getValueOf("LEVEL") + 1
+    GAME:setValueOf("LEVEL", level)
     GAME:sendCommand("RELOAD")
     GAME:setValueOf("SCORE", score)
     GAME:setValueOf("LIVES", lives)
@@ -87,6 +99,10 @@ local function decreaseFPS()
     end
 end
 
+local function toggleWallShuffle()
+    GAME:setValueOf("SHOULD_SHUFFLE_WALLS", not GAME:getValueOf("SHOULD_SHUFFLE_WALLS"))
+end
+
 inputProcessor:addCommand("UP",          CONTROLLER1:wrapCommand("UP")) 
 inputProcessor:addCommand("DOWN",        CONTROLLER1:wrapCommand("DOWN"))
 inputProcessor:addCommand("LEFT",        CONTROLLER1:wrapCommand("LEFT")) 
@@ -98,9 +114,11 @@ inputProcessor:addCommand("GAMESPEED--", VoidFunctionPointer(decreaseGameSpeed))
 inputProcessor:addCommand("RELOAD",      VoidFunctionPointer(reloadFeatures))
 inputProcessor:addCommand("QUIT",        VoidFunctionPointer(quitGame))
 inputProcessor:addCommand("LEVEL++",     VoidFunctionPointer(nextLevel))
+inputProcessor:addCommand("LEVEL--",     VoidFunctionPointer(previousLevel))
 inputProcessor:addCommand("LIVES++",     VoidFunctionPointer(addLife))
 inputProcessor:addCommand("LIVES--",     VoidFunctionPointer(removeLife))
 inputProcessor:addCommand("RESTART",     VoidFunctionPointer(restartGame))
 inputProcessor:addCommand("RESPAWN_ALL_PACTORS_AND_TILES", VoidFunctionPointer(respawnAllPactorsAndTiles))
 inputProcessor:addCommand("FPS++",       VoidFunctionPointer(increaseFPS))
 inputProcessor:addCommand("FPS--",       VoidFunctionPointer(decreaseFPS))
+inputProcessor:addCommand("TOGGLE_WALL_SHUFFLE", VoidFunctionPointer(toggleWallShuffle))

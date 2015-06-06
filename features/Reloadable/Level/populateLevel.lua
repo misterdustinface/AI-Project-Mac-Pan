@@ -1,4 +1,14 @@
-local poptable = dofile("levels/baselevelPopulate.lua")
+local poptables = {
+  "levels/baselevelPopulate.lua",
+  "levels/stupidlevelPopulate.lua",
+  "levels/mazelevelPopulate.lua",
+  "levels/mazelevelPopulate2.lua",
+  "levels/stupidlevelPopulate.lua",
+}
+
+local index = (GAME:getValueOf("LEVEL") % #poptables) + 1
+
+local poptable = dofile(poptables[index])
 
 local Pactor    = require("PacDaddyGameWrapper/Pactor")
 local Player    = require("PacDaddyGameWrapper/Player")
@@ -15,6 +25,12 @@ local classmap = {
 }
 
 local function populate(poptable)
+
+    local existing = GAME:getAllPactors()
+    for _, pactor in ipairs(existing) do
+        GAME:removePactor(pactor:getValueOf("NAME"))
+    end
+
     local world = GAME:getWorld()
     for _, entity in ipairs(poptable) do
         local name  = entity.name

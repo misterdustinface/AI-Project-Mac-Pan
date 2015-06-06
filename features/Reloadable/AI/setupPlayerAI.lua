@@ -39,7 +39,7 @@ end
 local function playerTickWithGravityMap()
     timer:start()
     if GAME:getValueOf("PLAYER_ENERGIZED") then
-        gravityMap:setWeights({ ENEMY = -1, PELLET = getPickupGravity(), ENERGIZER = -10 })
+        gravityMap:setWeights({ ENEMY = 0,   PELLET = getPickupGravity(), ENERGIZER = -10 })
     else
         gravityMap:setWeights({ ENEMY = -10, PELLET = getPickupGravity(), ENERGIZER = 10 })
     end

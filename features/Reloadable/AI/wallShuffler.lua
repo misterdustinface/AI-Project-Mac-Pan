@@ -244,5 +244,11 @@ local function shuffleWalls()
 
 end
 
+local function wallShuffleTick()
+    if GAME:getValueOf("SHOULD_SHUFFLE_WALLS") then
+        shuffleWalls()
+    end
+end
+
 setup()
-WALL_SHUFFLE_TICK = shuffleWalls
+WALL_SHUFFLE_TICK = wallShuffleTick

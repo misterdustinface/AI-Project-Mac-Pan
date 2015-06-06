@@ -25,10 +25,11 @@ CONTROLS:
 | R             | Reload the game features                                       |
 | Q / ESC       | Quit the game                                                  |
 | P             | Pause the game update loop.                                    |
-| F1 / F2       | Change number of lives                                         |
-| F3 / F4       | Change the game speed, in updates per second (UPS)             |
-| F5 / F6       | Change the render speed, in frames per second (FPS)            |
-| F9            | Go to the next level                                           |
+| 1 / 2         | Change number of lives                                         |
+| 3 / 4         | Change the game speed, in updates per second (UPS)             |
+| 5 / 6         | Change the render speed, in frames per second (FPS)            |
+| 7 / 8         | Change the level                                               |
+| 9             | Toggle Wall Shuffling                                          |
 
 #### Reference
 - [PacDaddy Engine](https://github.com/misterdustinface/PacDaddy)
