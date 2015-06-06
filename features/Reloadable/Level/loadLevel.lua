@@ -6,6 +6,7 @@ local levels = {
   "levels/stupidlevel.txt",
   "levels/mazelevel.txt",
   "levels/mazelevel.txt",
+  "levels/mazelevel.txt",
   "levels/largeroom.txt",
 }
 

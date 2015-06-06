@@ -3,7 +3,8 @@ local poptables = {
   "levels/stupidlevelPopulate.lua",
   "levels/mazelevelPopulate.lua",
   "levels/mazelevelPopulate2.lua",
-  "levels/stupidlevelPopulate.lua",
+  "levels/mazelevelPopulate3.lua",
+  "levels/largeroomPopulate.lua",
 }
 
 local index = (GAME:getValueOf("LEVEL") % #poptables) + 1
