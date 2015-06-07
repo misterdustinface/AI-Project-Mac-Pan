@@ -1,6 +1,7 @@
 local player = GAME:getPactor("PLAYER1")
-local searchAlg = require("features/Reloadable/AI/astar")
+local SearchAlg = require("features/Reloadable/AI/bfs")
 local GravityMap = require("features/Reloadable/AI/GravityMap")
+local GravityField = require("features/Reloadable/AI/GravityField")
 local Stopwatch = require("luasrc/StopwatchTimer")
 
 local getDirectionToMove
@@ -9,8 +10,10 @@ local primaryDirection   = { ["PLAYER1"] = "NONE" }
 local secondaryDirection = { ["PLAYER1"] = "NONE" }
 
 local gravityMap = GravityMap:new()
+local gravityField = GravityField:new()
 
 function getDirectionToMove(start, goal)
+  local searchAlg = SearchAlg:new()
   local board = GAME:getTiledBoard()
   searchAlg:setBoard(board)
   searchAlg:setStart(start)
@@ -25,7 +28,7 @@ end
 
 
 local timer = Stopwatch:new()
---timer:average(2)
+timer:average(10)
 
 local high = 0
 local function getPickupGravity()
@@ -39,7 +42,7 @@ end
 local function playerTickWithGravityMap()
     timer:start()
     if GAME:getValueOf("PLAYER_ENERGIZED") then
-        gravityMap:setWeights({ ENEMY = 0,   PELLET = getPickupGravity(), ENERGIZER = -10 })
+        gravityMap:setWeights({ ENEMY = 0, PELLET = getPickupGravity(), ENERGIZER = -10 })
     else
         gravityMap:setWeights({ ENEMY = -10, PELLET = getPickupGravity(), ENERGIZER = 10 })
     end
@@ -50,6 +53,27 @@ local function playerTickWithGravityMap()
     secondaryDirection["PLAYER1"] = gravityMap:bestSecondaryMove("PLAYER1")
     
     timer:stop()
+end
+
+local function trueDistanceFunction(A, B)
+  local distance, direction = getDirectionToMove(A, B)
+  return distance, direction
+end
+
+local function playerTickWithGravityField()
+  timer:start()
+      if GAME:getValueOf("PLAYER_ENERGIZED") then
+        gravityField:setWeights({ ENEMY = 0, PELLET = getPickupGravity(), ENERGIZER = -10 })
+    else
+        gravityField:setWeights({ ENEMY = -10, PELLET = getPickupGravity(), ENERGIZER = 10 })
+    end
+    gravityField:setDegeneracyFunction( degenerate )
+  gravityField:setDistanceDirectionFunction( trueDistanceFunction )
+    gravityField:generate()
+  
+    primaryDirection["PLAYER1"] = gravityField:bestMove("PLAYER1")
+  
+  timer:stop()
 end
 
 local function playerTickWithSearch()

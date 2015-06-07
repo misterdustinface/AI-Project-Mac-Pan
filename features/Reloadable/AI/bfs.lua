@@ -25,104 +25,96 @@ local setStart
 local setGoal
 local bestMove
 
--- START BFS DATA STRUCTURES
-local visited
-local ready
-local predecessors
--- END BFS DATA STRUCTURES
-
-local board
-local start
-local destination
-
-function initDataStructures()
-  visited = {}
-  ready = Queue:new()
-  predecessors = {}
+function initDataStructures(this)
+  this.visited = {}
+  this.ready = Queue:new()
+  this.predecessors = {}
 end
 
-function bfs(start)
-  visit(start)
+function bfs(this, start)
+  visit(this, start)
   
   local foundGoal = false
   
-  while not ready:isEmpty() and not foundGoal do
-    local current = ready:dequeue()
-    visitIfPossible(current, getTileToLeftOf(current))
-    visitIfPossible(current, getTileToRightOf(current))
-    visitIfPossible(current, getTileAbove(current))
-    visitIfPossible(current, getTileBelow(current))
-    foundGoal = (current.row == destination.row and current.col == destination.col)
+  while not this.ready:isEmpty() and not foundGoal do
+    local current = this.ready:dequeue()
+    visitIfPossible(this, current, getTileToLeftOf(this, current))
+    visitIfPossible(this, current, getTileToRightOf(this, current))
+    visitIfPossible(this, current, getTileAbove(this, current))
+    visitIfPossible(this, current, getTileBelow(this, current))
+    foundGoal = (current.row == this.destination.row and current.col == this.destination.col)
   end
 end
 
-function visitIfPossible(current, neighbor)
-  if isVisitable(neighbor) then
-    setPredecessorOf(neighbor, current)
-    visit(neighbor)
+function visitIfPossible(this, current, neighbor)
+  if isVisitable(this, neighbor) then
+    setPredecessorOf(this, neighbor, current)
+    visit(this, neighbor)
   end
 end
 
-function visit(tile)
-  ready:enqueue(tile)
-  markAsVisited(tile)
+function visit(this, tile)
+  this.ready:enqueue(tile)
+  markAsVisited(this, tile)
 end
 
-function isVisitable(tile)
-  return isTraversable(tile) and not wasVisited(tile)
+function isVisitable(this, tile)
+  return isTraversable(tile) and not wasVisited(this, tile)
 end
 
-function markAsVisited(tile)
-  visited[getTileID(tile)] = tile
+function markAsVisited(this, tile)
+  this.visited[getTileID(tile)] = tile
 end
 
-function wasVisited(tile)
-  return visited[getTileID(tile)]
+function wasVisited(this, tile)
+  return this.visited[getTileID(tile)]
 end
 
-function getStartSuccessor(start, destination)
+function getStartSuccessor(this, start, destination)
   local tile = destination
-  while getPredecessorOf(tile) ~= start do
+  local distance = 0
+  while getPredecessorOf(this, tile) ~= start do
     --print("CURRENT SUCCESSOR: ", tile.row, tile.col)
-    tile = getPredecessorOf(tile)
+    tile = getPredecessorOf(this, tile)
+  distance = distance + 1
   end
-  return tile
+  return tile, distance
 end
 
-function setPredecessorOf(tile, predecessorTile)
-  predecessors[getTileID(tile)] = predecessorTile
+function setPredecessorOf(this, tile, predecessorTile)
+  this.predecessors[getTileID(tile)] = predecessorTile
 end
 
-function getPredecessorOf(tile)
-  return predecessors[getTileID(tile)]
+function getPredecessorOf(this, tile)
+  return this.predecessors[getTileID(tile)]
 end
 
-function getTileToRightOf(currentTile)
-  return wrapBoundary({row = currentTile.row, col = currentTile.col + 1})
+function getTileToRightOf(this, currentTile)
+  return wrapBoundary(this, {row = currentTile.row, col = currentTile.col + 1})
 end
 
-function getTileToLeftOf(currentTile)
-  return wrapBoundary({row = currentTile.row, col = currentTile.col - 1})
+function getTileToLeftOf(this, currentTile)
+  return wrapBoundary(this, {row = currentTile.row, col = currentTile.col - 1})
 end
 
-function getTileAbove(currentTile)
-  return wrapBoundary({row = currentTile.row - 1, col = currentTile.col})
+function getTileAbove(this, currentTile)
+  return wrapBoundary(this, {row = currentTile.row - 1, col = currentTile.col})
 end
 
-function getTileBelow(currentTile)
-  return wrapBoundary({row = currentTile.row + 1, col = currentTile.col})
+function getTileBelow(this, currentTile)
+  return wrapBoundary(this, {row = currentTile.row + 1, col = currentTile.col})
 end
 
-function wrapBoundary(tile)
+function wrapBoundary(this, tile)
   if tile.row < 1 then
-    tile.row = board.length
-  elseif tile.row > board.length then
+    tile.row = this.board.length
+  elseif tile.row > this.board.length then
     tile.row = 1
   end
   
   if tile.col < 1 then
-    tile.col = board[1].length
-  elseif tile.col > board[1].length then
+    tile.col = this.board[1].length
+  elseif tile.col > this.board[1].length then
     tile.col = 1
   end
   
@@ -154,29 +146,40 @@ function isTraversable(tile)
 end
 
 function setBoard(this, xBoard)
-  board = xBoard
+  this.board = xBoard
 end
 
 function setStart(this, xStart)
-  start = xStart
+  this.start = xStart
 end
 
 function setGoal(this, xGoal)
-  destination = xGoal
+  this.destination = xGoal
 end
 
 function bestMove(this)
-  initDataStructures()
-  bfs(start)
-  local bestNextTile = getStartSuccessor(start, destination)
-  return determineDirectionToMove(start, bestNextTile)
+  initDataStructures(this)
+  bfs(this, this.start)
+  local bestNextTile, distance = getStartSuccessor(this, this.start, this.destination)
+  return determineDirectionToMove(this.start, bestNextTile), distance
 end
 
-local public = {}
+local function new()
+  return {
+    setBoard = setBoard,
+    setStart = setStart,
+    setGoal = setGoal,
+    bestMove = bestMove,
+    
+    visited = nil,
+    ready = nil,
+    predecessors = nil,
+    board = nil,
+    start = nil,
+    destination = nil,
+  }
+end
 
-public.setBoard = setBoard
-public.setStart = setStart
-public.setGoal  = setGoal
-public.bestMove = bestMove
-
-return public
+return {
+  new = new
+}

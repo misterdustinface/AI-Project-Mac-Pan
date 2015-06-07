@@ -3,4 +3,5 @@ return {
   "Reloadable",
   "Display",
   "Start",
+  "promisetest.lua",
 }

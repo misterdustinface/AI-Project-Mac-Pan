@@ -2,4 +2,4 @@
 
 echo "running"
 
-java -jar PacDaddyEngine.jar
+java -jar PacDaddyEngine.jar > log.txt
