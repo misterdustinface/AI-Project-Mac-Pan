@@ -236,7 +236,7 @@ function bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
         selectDirectionIfBestMove(gravMap, pactorName, { row = coordinate.row, col = coordinate.col - 1 }, "LEFT",  bestMove)
         selectDirectionIfBestMove(gravMap, pactorName, { row = coordinate.row, col = coordinate.col + 1 }, "RIGHT", bestMove)
     end
-    
+
     return bestMove.direction
 end
 
@@ -256,12 +256,14 @@ function bestSecondaryMove(gravMap, pactorName)
     local coordinate = GAME:getCoordinateOfPactor(pactorName)
 
     local direction = bestMove(gravMap, pactorName)
-    local coordinateModifier = coordinateModifiers[direction]
-    if type(coordinateModifier) == 'function' then
-        coordinateModifier(gravMap, coordinate)
+    if direction ~= "NONE" then
+        local coordinateModifier = coordinateModifiers[direction]
+        if type(coordinateModifier) == 'function' then
+            coordinateModifier(gravMap, coordinate)
+        end
+        local direction = bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
     end
-    
-    return bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
+    return direction
 end
 
 public.new = function(this)

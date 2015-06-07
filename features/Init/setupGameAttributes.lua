@@ -5,6 +5,7 @@ GAME:setValueOf("IS_PAUSED", true)
 GAME:setValueOf("LOST_GAME", false)
 GAME:setValueOf("LEVEL", 1)
 GAME:setValueOf("SHOULD_SHUFFLE_WALLS", false)
+GAME:setValueOf("SHOULD_USE_PLAYER_AI", true)
 
 local debounceTimer = require("luasrc/DebounceTimer") 
 local energizedDebounceTimer = debounceTimer:new()

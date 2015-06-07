@@ -28,6 +28,7 @@ local pressProcessDispatch = {
     [KEYS.EIGHT] = function() GAME:sendCommand("LEVEL++") end,
     
     [KEYS.NINE]  = function() GAME:sendCommand("TOGGLE_WALL_SHUFFLE") end, 
+    [KEYS.ZERO]  = function() GAME:sendCommand("TOGGLE_PLAYER_AI") end,
 }
 
 PRESS_PROCESS_DISPATCH = pressProcessDispatch

@@ -68,7 +68,7 @@ local function playerTickWithGravityField()
         gravityField:setWeights({ ENEMY = -10, PELLET = getPickupGravity(), ENERGIZER = 10 })
     end
     gravityField:setDegeneracyFunction( degenerate )
-  gravityField:setDistanceDirectionFunction( trueDistanceFunction )
+    gravityField:setDistanceDirectionFunction( trueDistanceFunction )
     gravityField:generate()
   
     primaryDirection["PLAYER1"] = gravityField:bestMove("PLAYER1")
@@ -97,11 +97,13 @@ local oppositeDirections = {
 }
 
 local function playerPerform()
-    if player:getValueOf("DIRECTION") == "NONE" then
-        player:performAction(primaryDirection["PLAYER1"])
-    else
-        player:performAction(primaryDirection["PLAYER1"])
-        player:performAction(secondaryDirection["PLAYER1"])
+    if GAME:getValueOf("SHOULD_USE_PLAYER_AI") then
+        if player:getValueOf("DIRECTION") == "NONE" then
+            player:performAction(primaryDirection["PLAYER1"])
+        else
+            player:performAction(primaryDirection["PLAYER1"])
+            player:performAction(secondaryDirection["PLAYER1"])
+        end
     end
 end
 

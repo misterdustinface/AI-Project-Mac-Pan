@@ -103,6 +103,10 @@ local function toggleWallShuffle()
     GAME:setValueOf("SHOULD_SHUFFLE_WALLS", not GAME:getValueOf("SHOULD_SHUFFLE_WALLS"))
 end
 
+local function togglePlayerAI()
+    GAME:setValueOf("SHOULD_USE_PLAYER_AI", not GAME:getValueOf("SHOULD_USE_PLAYER_AI"))
+end
+
 inputProcessor:addCommand("UP",          CONTROLLER1:wrapCommand("UP")) 
 inputProcessor:addCommand("DOWN",        CONTROLLER1:wrapCommand("DOWN"))
 inputProcessor:addCommand("LEFT",        CONTROLLER1:wrapCommand("LEFT")) 
@@ -122,3 +126,4 @@ inputProcessor:addCommand("RESPAWN_ALL_PACTORS_AND_TILES", VoidFunctionPointer(r
 inputProcessor:addCommand("FPS++",       VoidFunctionPointer(increaseFPS))
 inputProcessor:addCommand("FPS--",       VoidFunctionPointer(decreaseFPS))
 inputProcessor:addCommand("TOGGLE_WALL_SHUFFLE", VoidFunctionPointer(toggleWallShuffle))
+inputProcessor:addCommand("TOGGLE_PLAYER_AI", VoidFunctionPointer(togglePlayerAI))

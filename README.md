@@ -30,6 +30,7 @@ CONTROLS:
 | 5 / 6         | Change the render speed, in frames per second (FPS)            |
 | 7 / 8         | Change the level                                               |
 | 9             | Toggle Wall Shuffling                                          |
+| 0             | Toggle Player AI                                               |
 
 #### Reference
 - [PacDaddy Engine](https://github.com/misterdustinface/PacDaddy)
