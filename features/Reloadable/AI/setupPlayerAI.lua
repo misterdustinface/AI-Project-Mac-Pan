@@ -50,7 +50,7 @@ local function playerTickWithGravityMap()
     gravityMap:generate()
 --    gravityMap:print()
     primaryDirection["PLAYER1"] = gravityMap:bestMove("PLAYER1")
-    secondaryDirection["PLAYER1"] = gravityMap:bestSecondaryMove("PLAYER1")
+--    secondaryDirection["PLAYER1"] = gravityMap:bestSecondaryMove("PLAYER1")
     
     timer:stop()
 end
@@ -102,7 +102,7 @@ local function playerPerform()
             player:performAction(primaryDirection["PLAYER1"])
         else
             player:performAction(primaryDirection["PLAYER1"])
-            player:performAction(secondaryDirection["PLAYER1"])
+--            player:performAction(secondaryDirection["PLAYER1"])
 --            print('Primary  ', primaryDirection["PLAYER1"])
 --            print('Secondary', secondaryDirection["PLAYER1"])
         end

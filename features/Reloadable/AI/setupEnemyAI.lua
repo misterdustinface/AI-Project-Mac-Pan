@@ -52,7 +52,7 @@ local function applyGravmapTo(myName)
     end
 
     primaryDirection[myName] = gravityMap:bestMove(myName)
-    secondaryDirection[myName] = gravityMap:bestSecondaryMove(myName)
+--    secondaryDirection[myName] = gravityMap:bestSecondaryMove(myName)
 end
 
 local function enemyTickWithGravityMap()
