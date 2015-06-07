@@ -11,7 +11,9 @@ TO RUN:
  - Linux: On some machines you may have to execute the "run.sh" script from the command line. 
 
 BUGS:
- - Wall shuffling does not properly shuffle pellets after (reloading / level up / death).
+ - Wall shuffling creates some dead ends and trapped sections.
+ - When Pacman is in a dead end, the engine cannot correctly interpret a sequence of two inputs which are necessary to escape.
+ - Text does not always appear on Windows Machines.
 
 OTHER ISSUES:
  - Pacman AI is currently much too slow to perform adequately at normal game speed.  Recommended to lower the game update speed.

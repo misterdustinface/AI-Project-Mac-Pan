@@ -256,13 +256,13 @@ function bestSecondaryMove(gravMap, pactorName)
     local coordinate = GAME:getCoordinateOfPactor(pactorName)
 
     local direction = bestMove(gravMap, pactorName)
-    if direction ~= "NONE" then
-        local coordinateModifier = coordinateModifiers[direction]
-        if type(coordinateModifier) == 'function' then
-            coordinateModifier(gravMap, coordinate)
-        end
-        local direction = bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
+
+    local coordinateModifier = coordinateModifiers[direction]
+    if type(coordinateModifier) == 'function' then
+        coordinateModifier(gravMap, coordinate)
     end
+    local direction = bestDirectionForPactorGivenCoordinate(gravMap, pactorName, coordinate)
+
     return direction
 end
 

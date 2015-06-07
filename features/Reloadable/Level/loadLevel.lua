@@ -8,6 +8,7 @@ local levels = {
   "levels/mazelevel.txt",
   "levels/mazelevel.txt",
   "levels/largeroom.txt",
+  "levels/baselevel.txt",
 }
 
 local index = (GAME:getValueOf("LEVEL") % #levels) + 1

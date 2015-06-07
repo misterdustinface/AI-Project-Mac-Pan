@@ -28,7 +28,7 @@ end
 
 
 local timer = Stopwatch:new()
-timer:average(10)
+--timer:average(10)
 
 local high = 0
 local function getPickupGravity()
@@ -103,6 +103,8 @@ local function playerPerform()
         else
             player:performAction(primaryDirection["PLAYER1"])
             player:performAction(secondaryDirection["PLAYER1"])
+--            print('Primary  ', primaryDirection["PLAYER1"])
+--            print('Secondary', secondaryDirection["PLAYER1"])
         end
     end
 end
