@@ -7,4 +7,6 @@ local populationTable = {
 
 GAME:setValueOf("SHOULD_SHUFFLE_WALLS", false)
 
+print("SMALL SIMPLE LEVEL")
+
 return populationTable

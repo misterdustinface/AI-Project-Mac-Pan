@@ -43,4 +43,6 @@ for row = 1, board.length do
     end
 end
 
+print("Fully Loaded Base Level")
+
 return populationTable

@@ -11,4 +11,6 @@ local populationTable = {
 
 GAME:setValueOf("SHOULD_SHUFFLE_WALLS", false)
 
+print("Large Room Level")
+
 return populationTable

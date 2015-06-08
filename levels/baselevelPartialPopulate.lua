@@ -19,4 +19,6 @@ local populationTable = {
 
 GAME:setValueOf("SHOULD_SHUFFLE_WALLS", true)
 
+print("Partially Populated Base Level")
+
 return populationTable
